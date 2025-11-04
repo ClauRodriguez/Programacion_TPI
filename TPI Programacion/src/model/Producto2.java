@@ -1,13 +1,13 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+ 
 package model;
 
 /**
  *
  * @author hcoceres
- */
+
 public class Producto {
     private int id;
     private String nombre;
@@ -52,3 +52,4 @@ public class Producto {
         return "Producto [id=" + id + ", nombre=" + nombre + ", precio=" + precio + "]";
     }
 }
+*/

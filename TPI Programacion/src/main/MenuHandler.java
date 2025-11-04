@@ -15,6 +15,7 @@ import model.Producto;
 import java.util.Scanner; // HAY QUE RESOLVER QUE ESTÉ SOLO EN UN LUGAR
 import model.CategoriaProducto;
 import model.CodigoBarras;
+import model.EnumTipo;
 import model.GeneradorProductosPrueba;
 import service.ProductoService;
 
@@ -107,7 +108,7 @@ public class MenuHandler {
                 return;
             }
 
-            Producto producto = new Producto(nombre, marca, precio, peso, stock, 0, true); // COMO SE AGREGA EL ID AUTOMATICAMENTE?
+            Producto producto = new Producto(nombre, marca, precio, peso, stock, 0); // COMO SE AGREGA EL ID AUTOMATICAMENTE?
             System.out.print("Asignar categoría al producto: ");
             producto.setCategoria();
 
@@ -368,15 +369,39 @@ public class MenuHandler {
      *
      * @return CodigoBarras nuevo (ID=0)
      */
-    private CodigoBarras crearCodigo() {
-        int id = 0; // Crea objeto Codigo con ID=0 (será asignado por BD al insertar)
-        System.out.print("Valor: ");
-        String valor = scanner.nextLine().trim();
-        LocalDate fechaAsignacion = LocalDate.now();
-        System.out.print("Observaciones (opcional): ");
-        String observaciones = scanner.nextLine().trim();
-        CodigoBarras cod = new CodigoBarras(id, false, valor, fechaAsignacion, observaciones);
-        return cod;
+    
+        private EnumTipo elegirTipoCodigo() {
+    EnumTipo[] tipos = EnumTipo.values();
+    System.out.println("Seleccione el tipo de Código de Barras:");
+    for (int i = 0; i < tipos.length; i++) {
+        System.out.println((i + 1) + "). " + tipos[i].name());
     }
 
+    while (true) {
+        System.out.print("Opción: ");
+        try {
+            int opcion = Integer.parseInt(scanner.nextLine().trim());
+            if (opcion >= 1 && opcion <= tipos.length) {
+                return tipos[opcion - 1]; // índice correcto
+            } else {
+                System.out.println("La opción debe estar entre 1 y " + tipos.length);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Ingrese un número válido.");
+        }
+    }
 }
+private CodigoBarras crearCodigo() {
+    int id = 0; // lo asignará la BD posteriormente
+    EnumTipo tipo = elegirTipoCodigo(); // <-- ahora sí es EnumTipo
+
+    System.out.print("Valor: ");
+    String valor = scanner.nextLine().trim();
+
+    LocalDate fechaAsignacion = LocalDate.now();
+
+    System.out.print("Observaciones (opcional): ");
+    String observaciones = scanner.nextLine().trim();
+
+    return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observaciones);
+}}

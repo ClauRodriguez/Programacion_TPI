@@ -60,24 +60,9 @@ public class CodigoBarras extends Base {
      * Establece el tipo de Codigo de Barras.
      * Validación: CodigoServiceImpl verifica que no esté vacío. 
      */
-    public EnumTipo setTipo() {
-        EnumTipo[] tipos = EnumTipo.values();
-        int i = 0;
-        System.out.println("Seleccione el tipo de Código de Barras que desea crear: ");
-        for (EnumTipo tipo : tipos) {
-            System.out.println((i+1) + "). " + tipo.name());
-            i++;
-        }
-        int opcion = Integer.parseInt(scanner.nextLine());
-
-        if (opcion >= 0 && opcion < tipos.length) {
-            return tipos[opcion];
-        } else {
-            throw new IllegalArgumentException(
-                    "La opción elegida (" + opcion + ") está fuera de rango. Debe estar entre 1 y " + (tipos.length)
-            );
-        }
-    }
+public void setTipo(EnumTipo tipo) {
+    this.tipo = tipo;
+}
     
     /**
      * Establece el valor del Codigo de Barras.
