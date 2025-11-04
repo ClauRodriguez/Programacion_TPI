@@ -1,5 +1,5 @@
 
-package tpi_p2.Models;
+package model;
 
 /**
  * @author Hernán E. Bula
@@ -84,7 +84,7 @@ public class GeneradorProductosPrueba { // ESTO ES SOLO PARA PROBAR. UNA VEZ CON
     private static Producto crearProducto(int id, String nombre, String marca, CategoriaProducto categoria, 
                                          double precio, double peso, int stock, CodigoBarras codigoBarras) {
         // Usar el constructor actualizado con stock
-        Producto producto = new Producto(nombre, marca, precio, peso, stock, id, false);
+        Producto producto = new Producto(nombre, marca, precio, peso, stock, id);
         
         // Usar reflection para settear la categoría y código de barras
         try {

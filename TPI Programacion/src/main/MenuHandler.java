@@ -1,4 +1,4 @@
-package tpi_p2.Main;
+package main;
 
 /**
  * @authors 
@@ -11,12 +11,12 @@ package tpi_p2.Main;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import tpi_p2.Models.Producto;
+import model.Producto;
 import java.util.Scanner; // HAY QUE RESOLVER QUE ESTÉ SOLO EN UN LUGAR
-import tpi_p2.Models.CategoriaProducto;
-import tpi_p2.Models.CodigoBarras;
-import tpi_p2.Models.GeneradorProductosPrueba;
-import tpi_p2.Service.ProductoServiceImpl;
+import model.CategoriaProducto;
+import model.CodigoBarras;
+import model.GeneradorProductosPrueba;
+import service.ProductoService;
 
 /**
  * Controlador de las operaciones del menú (Menu Handler). 
@@ -45,7 +45,7 @@ public class MenuHandler {
      * Servicio de productos para operaciones CRUD. También proporciona acceso a
      * CodigoService mediante getCodigoService().
      */
-    private final ProductoServiceImpl productoService = null; // NO DEBERIA ESTAR EN NULL AQUI (solo está asi para que no de error)
+    private final ProductoService productoService = null; // NO DEBERIA ESTAR EN NULL AQUI (solo está asi para que no de error)
 
     /**
      * CONSTRUCTOR DE MENU con inyección de dependencias Valida que las

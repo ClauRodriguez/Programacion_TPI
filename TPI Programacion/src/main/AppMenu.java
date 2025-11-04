@@ -1,4 +1,4 @@
-package tpi_p2.Main;
+package main;
 
 /**
  * @authors 
@@ -8,7 +8,7 @@ package tpi_p2.Main;
  * Hernan E.Bula
  */
 import java.util.Scanner;
-import tpi_p2.Service.ProductoServiceImpl;
+import service.ProductoService;
 
 /**
  * Orquestador principal del menú de la aplicación. 

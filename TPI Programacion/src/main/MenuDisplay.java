@@ -1,5 +1,5 @@
 
-package tpi_p2.Main;
+package main;
 
 /**
  * @authors 

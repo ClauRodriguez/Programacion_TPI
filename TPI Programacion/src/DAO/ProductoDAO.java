@@ -58,9 +58,12 @@ public class ProductoDAO implements GenericDAO<Producto> {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Producto(
-                    rs.getInt("id"),
                     rs.getString("nombre"),
-                    rs.getDouble("precio")
+                    rs.getString("marca"),
+                    rs.getDouble("precio"),
+                    rs.getDouble("peso"),
+                    rs.getInt("stock"),
+                    rs.getInt("id")
                 );
             }
             return null;
@@ -76,9 +79,12 @@ public class ProductoDAO implements GenericDAO<Producto> {
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 lista.add(new Producto(
-                    rs.getInt("id"),
                     rs.getString("nombre"),
-                    rs.getDouble("precio")
+                    rs.getString("marca"),
+                    rs.getDouble("precio"),
+                    rs.getDouble("peso"),
+                    rs.getInt("stock"),
+                    rs.getInt("id")
                 ));
             }
         }
@@ -93,9 +99,12 @@ public class ProductoDAO implements GenericDAO<Producto> {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Producto(
-                    rs.getInt("id"),
                     rs.getString("nombre"),
-                    rs.getDouble("precio")
+                    rs.getString("marca"),
+                    rs.getDouble("precio"),
+                    rs.getDouble("peso"),
+                    rs.getInt("stock"),
+                    rs.getInt("id")
                 );
             }
             return null;

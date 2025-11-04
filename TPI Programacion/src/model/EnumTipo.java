@@ -1,5 +1,5 @@
 
-package tpi_p2.Models;
+package model;
 
 
 /**
@@ -9,7 +9,7 @@ package tpi_p2.Models;
  * Claudio Rodriguez, 
  * Hernan E.Bula
  */
-enum EnumTipo {
+public enum EnumTipo {
     EAN13,
     EAN8,
     UPC;

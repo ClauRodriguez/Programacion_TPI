@@ -1,50 +1,114 @@
+
 package model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Scanner; // REVISAR COMO IMPORTAR UNA SOLA VEZ SCANNER EN LA CLASE PRINCIPAL
 
-public class CodigoBarras {
-    private int id;
-    private String tipo;
+
+
+/**
+ * @author Hernán E. Bula
+ */
+
+public class CodigoBarras extends Base {
+    
+    Scanner scanner = new Scanner(System.in); // REVISAR COMO IMPORTAR UNA SOLA VEZ SCANNER EN LA CLASE PRINCIPAL
+
+    
+// tipo             Enum {EAN13, EAN8, UPC} 	NOT NULL 
+// valor            String 			NOT NULL, UNIQUE, máx. 20 
+// fechaAsignacion  java.time.LocalDate
+// observaciones     String 			máx. 255
+
+    private EnumTipo tipo;
     private String valor;
+    private LocalDate fechaAsignacion;
     private String observaciones;
-    private Date fechaAsignacion;
 
-    public CodigoBarras() {}
-
-    // ctor sin id (para INSERT auto-incremental)
-    public CodigoBarras(String tipo, String valor, Date fechaAsignacion) {
+    public CodigoBarras(int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
+        super(id, eliminado);
         this.tipo = tipo;
         this.valor = valor;
         this.fechaAsignacion = fechaAsignacion;
+        this.observaciones = observaciones;
+    }
+    public CodigoBarras() {
+    }
+    
+    
+// GETTERS
+    
+    public EnumTipo getTipo() {
+        return tipo;
     }
 
-    // ctor con id (para lecturas desde DB)
-    public CodigoBarras(int id, String tipo, String valor, Date fechaAsignacion) {
-        this.id = id;
-        this.tipo = tipo;
+    public String getValor() {
+        return valor;
+    }
+
+    public LocalDate getFechaAsignacion() {
+        return fechaAsignacion;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+    
+// SETTERS
+    
+    /**
+     * Establece el tipo de Codigo de Barras.
+     * Validación: CodigoServiceImpl verifica que no esté vacío. 
+     */
+    public EnumTipo setTipo() {
+        EnumTipo[] tipos = EnumTipo.values();
+        int i = 0;
+        System.out.println("Seleccione el tipo de Código de Barras que desea crear: ");
+        for (EnumTipo tipo : tipos) {
+            System.out.println((i+1) + "). " + tipo.name());
+            i++;
+        }
+        int opcion = Integer.parseInt(scanner.nextLine());
+
+        if (opcion >= 0 && opcion < tipos.length) {
+            return tipos[opcion];
+        } else {
+            throw new IllegalArgumentException(
+                    "La opción elegida (" + opcion + ") está fuera de rango. Debe estar entre 1 y " + (tipos.length)
+            );
+        }
+    }
+    
+    /**
+     * Establece el valor del Codigo de Barras.
+     * Validación: CodigoServiceImpl verifica que NOT NULL, UNIQUE, máx. 20 
+     * (FALTA DESARROLAR ESTO)
+     */
+    public void setValor(String valor) {
         this.valor = valor;
-        this.fechaAsignacion = fechaAsignacion;
+    }
+    
+    /**
+     * Establece la fecha y hora del producto.
+     */
+    public void setFechaAsignacion(int aaaa, int mm, int dd) {
+        this.fechaAsignacion = fechaAsignacion.of(aaaa, mm, dd);
     }
 
-    // Getters y Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
-
-    public String getValor() { return valor; }
-    public void setValor(String valor) { this.valor = valor; }
-
-    public String getObservaciones() { return observaciones; }
-    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
-
-    public Date getFechaAsignacion() { return fechaAsignacion; }
-    public void setFechaAsignacion(Date fechaAsignacion) { this.fechaAsignacion = fechaAsignacion; }
+     /**
+     * Establece las observaciones del código de barras.
+     * Validación: máx. 255 caracteres.
+     * (FALTA DESARROLAR ¿Esto es máximo de caracteres o de marcas?)
+     */
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+    
+// METODOS
 
     @Override
     public String toString() {
-        return "CodigoBarras [id=" + id + ", tipo=" + tipo + ", valor=" + valor +
-               ", fechaAsignacion=" + fechaAsignacion + "]";
+        return "\n---\nCódigo de barras:\n - ID: " + getId() + "\n - Tipo: " + tipo + "\n - Valor: " + valor + "\n - Fecha de asignacion: " + fechaAsignacion + "\n - Observaciones: " + observaciones;
     }
+    
 }

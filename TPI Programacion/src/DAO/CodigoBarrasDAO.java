@@ -1,15 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO;
 
 import config.DatabaseConnection;
 import model.CodigoBarras;
+import model.EnumTipo;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
 
@@ -17,11 +16,18 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
     public void insertar(CodigoBarras entidad) throws Exception {
         String sql = "INSERT INTO codigo_barras (tipo, valor, fecha_asignacion) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, entidad.getTipo());
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, entidad.getTipo().name()); // <-- Enum a String
             stmt.setString(2, entidad.getValor());
-            stmt.setDate(3, new java.sql.Date(entidad.getFechaAsignacion().getTime()));
+            stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion())); // <-- LocalDate a sql.Date
+
             stmt.executeUpdate();
+
+            // opcional: recuperar id generado
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) entidad.setId(rs.getInt(1));
+            }
         }
     }
 
@@ -30,10 +36,12 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         String sql = "UPDATE codigo_barras SET tipo = ?, valor = ?, fecha_asignacion = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, entidad.getTipo());
+
+            stmt.setString(1, entidad.getTipo().name());
             stmt.setString(2, entidad.getValor());
-            stmt.setDate(3, new java.sql.Date(entidad.getFechaAsignacion().getTime()));
+            stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion()));
             stmt.setInt(4, entidad.getId());
+
             stmt.executeUpdate();
         }
     }
@@ -43,6 +51,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         String sql = "DELETE FROM codigo_barras WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
@@ -53,18 +62,13 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         String sql = "SELECT * FROM codigo_barras WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new CodigoBarras(
-                    rs.getInt("id"),
-                    rs.getString("tipo"),
-                    rs.getString("valor"),
-                    rs.getDate("fecha_asignacion")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
             }
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -74,14 +78,8 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                lista.add(new CodigoBarras(
-                    rs.getInt("id"),
-                    rs.getString("tipo"),
-                    rs.getString("valor"),
-                    rs.getDate("fecha_asignacion")
-                ));
-            }
+
+            while (rs.next()) lista.add(mapRow(rs));
         }
         return lista;
     }
@@ -90,17 +88,34 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         String sql = "SELECT * FROM codigo_barras WHERE valor = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, valor);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new CodigoBarras(
-                    rs.getInt("id"),
-                    rs.getString("tipo"),
-                    rs.getString("valor"),
-                    rs.getDate("fecha_asignacion")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
             }
-            return null;
         }
+        return null;
     }
+
+private CodigoBarras mapRow(ResultSet rs) throws SQLException {
+    int id = rs.getInt("id");
+
+    String tipoStr = rs.getString("tipo");
+    EnumTipo tipo = (tipoStr != null) 
+            ? EnumTipo.valueOf(tipoStr.trim().toUpperCase())
+            : null; // o lanzá una excepción si es obligatorio
+
+    String valor = rs.getString("valor");
+
+    java.sql.Date sqlDate = rs.getDate("fecha_asignacion");
+    LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+    String observaciones = rs.getString("observaciones");
+
+    // Constructor: (int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones)
+    return new CodigoBarras(id, false, tipo, valor, fecha, observaciones);
 }
+
+    }
+
+//int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones)

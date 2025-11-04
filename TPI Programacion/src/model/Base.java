@@ -1,5 +1,5 @@
 
-package tpi_p2.Models;
+package model;
 
 /**
  * @authors 

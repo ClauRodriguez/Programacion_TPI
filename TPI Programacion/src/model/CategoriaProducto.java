@@ -1,4 +1,4 @@
-package tpi_p2.Models;
+package model;
 
 /**
  * @author Hernán E. Bula
