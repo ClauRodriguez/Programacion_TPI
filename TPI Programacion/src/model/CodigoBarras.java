@@ -2,18 +2,12 @@
 package model;
 
 import java.time.LocalDate;
-import java.util.Scanner; // REVISAR COMO IMPORTAR UNA SOLA VEZ SCANNER EN LA CLASE PRINCIPAL
-
-
 
 /**
  * @author Hernán E. Bula
  */
 
 public class CodigoBarras extends Base {
-    
-    Scanner scanner = new Scanner(System.in); // REVISAR COMO IMPORTAR UNA SOLA VEZ SCANNER EN LA CLASE PRINCIPAL
-
     
 // tipo             Enum {EAN13, EAN8, UPC} 	NOT NULL 
 // valor            String 			NOT NULL, UNIQUE, máx. 20 
@@ -74,10 +68,12 @@ public void setTipo(EnumTipo tipo) {
     }
     
     /**
-     * Establece la fecha y hora del producto.
+     * Establece la fecha de asignación del código de barras.
+     * 
+     * @param fechaAsignacion La fecha de asignación
      */
-    public void setFechaAsignacion(int aaaa, int mm, int dd) {
-        this.fechaAsignacion = fechaAsignacion.of(aaaa, mm, dd);
+    public void setFechaAsignacion(LocalDate fechaAsignacion) {
+        this.fechaAsignacion = fechaAsignacion;
     }
 
      /**
@@ -93,7 +89,11 @@ public void setTipo(EnumTipo tipo) {
 
     @Override
     public String toString() {
-        return "\n---\nCódigo de barras:\n - ID: " + getId() + "\n - Tipo: " + tipo + "\n - Valor: " + valor + "\n - Fecha de asignacion: " + fechaAsignacion + "\n - Observaciones: " + observaciones;
+        // Mostrar observaciones correctamente, incluso si es null
+        String obsTexto = (observaciones != null && !observaciones.trim().isEmpty()) 
+            ? observaciones 
+            : "(sin observaciones)";
+        return "\n---\nCódigo de barras:\n - ID: " + getId() + "\n - Tipo: " + tipo + "\n - Valor: " + valor + "\n - Fecha de asignacion: " + fechaAsignacion + "\n - Observaciones: " + obsTexto;
     }
     
 }

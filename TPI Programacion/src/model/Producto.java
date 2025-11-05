@@ -1,17 +1,12 @@
 
 package model;
 
-import java.util.Scanner; // REVISAR COMO IMPORTAR UNA SOLA VEZ SCANNER EN LA CLASE PRINCIPAL
-
 /**
  * @author Hernán E. Bula
  */
 
 public class Producto extends Base {
     
-    Scanner scanner = new Scanner(System.in); // REVISAR COMO IMPORTAR UNA SOLA VEZ SCANNER EN LA CLASE PRINCIPAL
-    
-
 // nombre 		String 			NOT NULL, máx. 120 
 // marca 		String 			máx. 80 
 // categoria 		String 			máx. 80
@@ -98,26 +93,12 @@ public class Producto extends Base {
     }
 
     /**
-     * Establece la categoria del producto. 
-     * Validación: ProductoServiceImpl máx. 80 (FALTA DESARROLAR Si lo hacemos con NUM hace falta validarlo?)
+     * Establece la categoria del producto.
+     * 
+     * @param categoria La categoría a asignar al producto
      */
-    public void setCategoria() {
-        CategoriaProducto[] categorias = CategoriaProducto.values();
-        int i = 0;
-        System.out.println("Seleccione una opción para la categoría: ");
-        for (CategoriaProducto categoria : categorias) {
-            System.out.println((i+1) + "). " + categoria);
-            i++;
-        }
-        int opcion = Integer.parseInt(scanner.nextLine());
-
-        if (opcion >= 0 && opcion < categorias.length) {
-            this.categoria = categorias[opcion];
-        } else {
-            throw new IllegalArgumentException(
-                    "La opción elegida (" + opcion + ") está fuera de rango. Debe ingresar una entre 1 y " + (categorias.length)
-            );
-        }
+    public void setCategoria(CategoriaProducto categoria) {
+        this.categoria = categoria;
     }
 
     /**
@@ -156,7 +137,25 @@ public class Producto extends Base {
 
     @Override
     public String toString() {
-        return "\n" + ".".repeat(40) + "\nPRODUCTO: \n - ID: " + getId() + "\n - Nombre: " + nombre + "\n - Marca: " + marca + "\n - Categoria: " + categoria + "\n - Precio: " + precio + "\n - Peso: " + peso + "\n - Stock: " + stock + codigoBarras;
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n").append(".".repeat(40));
+        sb.append("\nPRODUCTO: ");
+        sb.append("\n - ID: ").append(getId());
+        sb.append("\n - Nombre: ").append(nombre);
+        sb.append("\n - Marca: ").append(marca != null ? marca : "N/A");
+        sb.append("\n - Categoria: ").append(categoria != null ? categoria : "N/A");
+        sb.append("\n - Precio: ").append(precio);
+        sb.append("\n - Peso: ").append(peso);
+        sb.append("\n - Stock: ").append(stock);
+        
+        // Mostrar código de barras solo si existe
+        if (codigoBarras != null) {
+            sb.append(codigoBarras.toString());
+        } else {
+            sb.append("\n---\nCódigo de barras: No asignado");
+        }
+        
+        return sb.toString();
     }
     
 }

@@ -14,33 +14,54 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
 
     @Override
     public void insertar(CodigoBarras entidad) throws Exception {
-        String sql = "INSERT INTO codigo_barras (tipo, valor, fecha_asignacion) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO codigo_barras (tipo, valor, fecha_asignacion, observaciones) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, entidad.getTipo().name()); // <-- Enum a String
+            stmt.setString(1, entidad.getTipo().name()); // Enum a String
             stmt.setString(2, entidad.getValor());
-            stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion())); // <-- LocalDate a sql.Date
+            stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion())); // LocalDate a sql.Date
+            
+            // IMPORTANTE: Guardar observaciones SIEMPRE, incluso si es cadena vacía
+            String obsValue = entidad.getObservaciones();
+            
+            // Si tiene valor, guardarlo (trim si es necesario pero mantener el valor)
+            if (obsValue != null && !obsValue.trim().isEmpty()) {
+                stmt.setString(4, obsValue.trim());
+            } else {
+                // Si es null o cadena vacía, guardar como NULL
+                stmt.setNull(4, Types.VARCHAR);
+            }
 
             stmt.executeUpdate();
 
-            // opcional: recuperar id generado
+            // Recuperar id generado automáticamente por la BD
             try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) entidad.setId(rs.getInt(1));
+                if (rs.next()) {
+                    entidad.setId(rs.getInt(1));
+                }
             }
         }
     }
 
     @Override
     public void actualizar(CodigoBarras entidad) throws Exception {
-        String sql = "UPDATE codigo_barras SET tipo = ?, valor = ?, fecha_asignacion = ? WHERE id = ?";
+        String sql = "UPDATE codigo_barras SET tipo = ?, valor = ?, fecha_asignacion = ?, observaciones = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, entidad.getTipo().name());
             stmt.setString(2, entidad.getValor());
             stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion()));
-            stmt.setInt(4, entidad.getId());
+            
+            // Actualizar observaciones (puede ser null)
+            if (entidad.getObservaciones() != null && !entidad.getObservaciones().trim().isEmpty()) {
+                stmt.setString(4, entidad.getObservaciones());
+            } else {
+                stmt.setNull(4, Types.VARCHAR);
+            }
+            
+            stmt.setInt(5, entidad.getId());
 
             stmt.executeUpdate();
         }
@@ -48,7 +69,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
 
     @Override
     public void eliminar(int id) throws Exception {
-        String sql = "DELETE FROM codigo_barras WHERE id = ?";
+        String sql = "UPDATE codigo_barras SET eliminado = true WHERE id = ? AND eliminado = false";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -59,7 +80,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
 
     @Override
     public CodigoBarras getById(int id) throws Exception {
-        String sql = "SELECT * FROM codigo_barras WHERE id = ?";
+        String sql = "SELECT * FROM codigo_barras WHERE id = ? AND eliminado = false";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -74,7 +95,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
     @Override
     public List<CodigoBarras> getAll() throws Exception {
         List<CodigoBarras> lista = new ArrayList<>();
-        String sql = "SELECT * FROM codigo_barras";
+        String sql = "SELECT * FROM codigo_barras WHERE eliminado = false";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -85,7 +106,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
     }
 
     public CodigoBarras getByValor(String valor) throws Exception {
-        String sql = "SELECT * FROM codigo_barras WHERE valor = ?";
+        String sql = "SELECT * FROM codigo_barras WHERE valor = ? AND eliminado = false";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -97,25 +118,29 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         return null;
     }
 
-private CodigoBarras mapRow(ResultSet rs) throws SQLException {
-    int id = rs.getInt("id");
+    /**
+     * Método auxiliar para mapear un ResultSet a un objeto CodigoBarras.
+     */
+    private CodigoBarras mapRow(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        boolean eliminado = rs.getBoolean("eliminado");
 
-    String tipoStr = rs.getString("tipo");
-    EnumTipo tipo = (tipoStr != null) 
-            ? EnumTipo.valueOf(tipoStr.trim().toUpperCase())
-            : null; // o lanzá una excepción si es obligatorio
+        String tipoStr = rs.getString("tipo");
+        EnumTipo tipo = (tipoStr != null && !tipoStr.trim().isEmpty()) 
+                ? EnumTipo.valueOf(tipoStr.trim().toUpperCase())
+                : null;
 
-    String valor = rs.getString("valor");
+        String valor = rs.getString("valor");
 
-    java.sql.Date sqlDate = rs.getDate("fecha_asignacion");
-    LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+        java.sql.Date sqlDate = rs.getDate("fecha_asignacion");
+        LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : null;
 
-    String observaciones = rs.getString("observaciones");
+        // Leer observaciones - puede ser null en la BD
+        String observaciones = rs.getString("observaciones");
+        // Si rs.getString devuelve null, el objeto tendrá null
+        // Si devuelve cadena vacía, también se mantiene
 
-    // Constructor: (int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones)
-    return new CodigoBarras(id, false, tipo, valor, fecha, observaciones);
-}
-
+        // Constructor: (int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones)
+        return new CodigoBarras(id, eliminado, tipo, valor, fecha, observaciones);
     }
-
-//int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones)
+}
