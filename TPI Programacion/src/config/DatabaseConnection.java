@@ -9,13 +9,13 @@ public class DatabaseConnection {
     // Configuración para MySQL (compatible con MariaDB también)
     // Para MySQL: "jdbc:mysql://localhost:3306/depositotpi"
     // Para MariaDB: "jdbc:mariadb://localhost:3306/depositotpi"
-    private static final String DB_NAME = "deposito";
+    private static final String DB_NAME = "depositotpi";
     private static final String HOST = "localhost";
-    private static final String PORT = "3307";
-    private static final String URL_WITH_DB = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME;
-    private static final String URL_WITHOUT_DB = "jdbc:mysql://" + HOST + ":" + PORT;
+    private static final String PORT = "3306";
+    private static final String URL_WITH_DB = "jdbc:mariadb://" + HOST + ":" + PORT + "/" + DB_NAME;
+    private static final String URL_WITHOUT_DB = "jdbc:mariadb://" + HOST + ":" + PORT;
     private static final String USER = "root";
-    private static final String PASSWORD = "Claudev1!";
+    private static final String PASSWORD = "";
 
     static {
         try {
