@@ -13,7 +13,7 @@ public class DatabaseConnection {
     private static final String HOST = "localhost";
     private static final String PORT = "3306";
     private static final String URL_WITH_DB = "jdbc:mariadb://" + HOST + ":" + PORT + "/" + DB_NAME;
-    private static final String URL_WITHOUT_DB = "jdbc:mariadb://" + HOST + ":" + PORT;
+    private static final String URL_WITHOUT_DB = "jdbc:mysql://" + HOST + ":" + PORT;
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
