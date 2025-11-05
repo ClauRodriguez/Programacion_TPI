@@ -5,15 +5,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mariadb://localhost:3306/deposito";
+    // Configuración para MySQL (compatible con MariaDB también)
+    // Para MySQL: "jdbc:mysql://localhost:3306/depositotpi"
+    // Para MariaDB: "jdbc:mariadb://localhost:3306/depositotpi"
+    private static final String URL = "jdbc:mysql://localhost:3307/depositotpi";
     private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "Claudev1!";
 
     static {
         try {
-            Class.forName("org.mariadb.jdbc.Driver");
+            // Intentar cargar driver de MySQL primero (más común)
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error: No se encontró el driver JDBC de MariaDB.");
+            try {
+                // Si no está MySQL, intentar con MariaDB
+                Class.forName("org.mariadb.jdbc.Driver");
+            } catch (ClassNotFoundException e2) {
+                throw new RuntimeException(
+                    "Error: No se encontró el driver JDBC. " +
+                    "Asegúrate de tener el driver MySQL Connector/J o MariaDB Connector/J en el classpath."
+                );
+            }
         }
     }
 

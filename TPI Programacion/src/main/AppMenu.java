@@ -9,20 +9,21 @@ package main;
  */
 import java.util.Scanner;
 import service.ProductoService;
+import service.CodigoBarrasService;
 
 /**
  * Orquestador principal del menú de la aplicación. 
  * Gestiona el ciclo de vida del menú y coordina todas las dependencias.
  *
  * Responsabilidades: 
- * - Crear y gestionar el Scanner único (evita múltiples instancias de System.in) // HAY QUE RESOLVERLAS AUN
- * - Inicializar toda la cadena de dependencias (DAOs → Services → Handler) // HAY QUE RESOLVERLAS AUN
- * - Ejecutar el loop principal del menú // RESUELTO
- * - Manejar la selección de opciones y delegarlas a MenuHandler // RESUELTO
- * - Cerrar recursos al salir (Scanner) // HAY QUE RESOLVERLAS AUN
+ * - Crear y gestionar el Scanner único (evita múltiples instancias de System.in)
+ * - Inicializar toda la cadena de dependencias (DAOs → Services → Handler)
+ * - Ejecutar el loop principal del menú
+ * - Manejar la selección de opciones y delegarlas a MenuHandler
+ * - Cerrar recursos al salir (Scanner)
  *
- * Patrón: Application Controller + Dependency Injection manual // HAY QUE RESOLVERLAS AUN
- * Arquitectura: Punto de entrada que ensambla las 4 capas (Main → Service → DAO → Models) // HAY QUE RESOLVERLAS AUN
+ * Patrón: Application Controller + Dependency Injection manual
+ * Arquitectura: Punto de entrada que ensambla las 4 capas (Main → Service → DAO → Models)
  *
  * IMPORTANTE: Esta clase NO tiene lógica de negocio ni de UI. Solo coordina y delega.
  */
@@ -30,18 +31,18 @@ import service.ProductoService;
 public class AppMenu {
     
     /**
-     * Scanner único compartido por toda la aplicación.// HAY QUE RESOLVER AUN
+     * Scanner único compartido por toda la aplicación.
      */
     private final Scanner scanner;
 
     /**
-     * Handler que ejecuta las operaciones del menú. // RESUELTO
+     * Handler que ejecuta las operaciones del menú.
      * Contiene toda la lógica de interacción con el usuario.
      */
     private final MenuHandler menuHandler; 
 
     /**
-     * Flag que controla el loop principal del menú. // RESUELTO
+     * Flag que controla el loop principal del menú.
      * Se setea a false cuando el usuario selecciona "0 - Salir".
      */
     private boolean running;
@@ -50,23 +51,26 @@ public class AppMenu {
      * Constructor que inicializa la aplicación.
      *
      * Flujo de inicialización:
-     * 1. Crea Scanner único para toda la aplicación // HAY QUE RESOLVER AUN
-     * 2. Crea cadena de dependencias (DAOs → Services) mediante createProductoService() // HAY QUE RESOLVER AUN
-     * 3. Crea MenuHandler con Scanner y ProductoService // HAY QUE RESOLVER AUN ProductoService
-     * 4. Setea running=true para iniciar el loop // RESUELTO
+     * 1. Crea Scanner único para toda la aplicación
+     * 2. Crea cadena de dependencias (DAOs → Services) mediante createProductoService()
+     * 3. Crea MenuHandler con Scanner, ProductoService y CodigoBarrasService
+     * 4. Setea running=true para iniciar el loop
      *
      * Patrón de inyección de dependencias (DI) manual:
-     * - CodigoDAO (sin dependencias) // HAY QUE RESOLVER AUN
-     * - ProductoDAO (depende de CodigoDAO) // HAY QUE RESOLVER AUN
-     * - CodigoServiceImpl (depende de CodigoDAO) // HAY QUE RESOLVER AUN
-     * - ProductoServiceImpl (depende de ProductoDAO y CodigoServiceImpl) // HAY QUE RESOLVER AUN
-     * - MenuHandler (depende de Scanner y ProductoServiceImpl)
+     * - CodigoBarrasDAO (sin dependencias)
+     * - ProductoDAO (depende de CodigoBarrasDAO)
+     * - CodigoBarrasService (depende de CodigoBarrasDAO)
+     * - ProductoService (depende de ProductoDAO)
+     * - MenuHandler (depende de Scanner, ProductoService y CodigoBarrasService)
      *
      * Esta inicialización garantiza que todas las dependencias estén correctamente conectadas.
      */
     public AppMenu() {
         this.scanner = new Scanner(System.in);
-        this.menuHandler = new MenuHandler(scanner);
+        // Crear servicios e inyectarlos
+        ProductoService productoService = createProductoService();
+        CodigoBarrasService codigoBarrasService = createCodigoBarrasService();
+        this.menuHandler = new MenuHandler(scanner, productoService, codigoBarrasService);
         this.running = true;
     }
 
@@ -80,7 +84,7 @@ public class AppMenu {
     }
 
     /**
-     * Loop principal del menú. // RESUELTO
+     * Loop principal del menú.
      * Manejo de errores:
      * - NumberFormatException: Captura entrada no numérica (ej: "abc")
      * - El usuario puede volver a intentar
@@ -90,10 +94,20 @@ public class AppMenu {
         while (running) {
             try {
                 MenuDisplay.mostrarMenuPrincipal();
-                int opcion = Integer.parseInt(scanner.nextLine());
+                System.out.flush(); // Forzar salida inmediata
+                String input = scanner.nextLine();
+                if (input == null || input.trim().isEmpty()) {
+                    continue;
+                }
+                int opcion = Integer.parseInt(input.trim());
                 processOption(opcion);
             } catch (NumberFormatException e) {
                 System.out.println("Entrada invalida. Por favor, ingrese un numero.");
+                System.out.flush();
+            } catch (Exception e) {
+                System.err.println("Error inesperado: " + e.getMessage());
+                e.printStackTrace();
+                System.out.flush();
             }
         }
         scanner.close();
@@ -128,12 +142,25 @@ public class AppMenu {
     }
 
     
-    /*
-    private ProductoServiceImpl createProductoService() { // FALTA RESOLVER ESTO
-        CodigoDAO codigoDAO = new CodigoDAO();
-        ProductoDAO productoDAO = new ProductoDAO(codigoDAO);
-        CodigoServiceImpl codigoService = new CodigoServiceImpl(codigoDAO);
-        return new ProductoServiceImpl(productoDAO, codigoService);
+    /**
+     * Crea e inicializa el servicio de productos.
+     * Este método construye la cadena de dependencias:
+     * ProductoDAO → ProductoService
+     * 
+     * @return ProductoService inicializado
+     */
+    private ProductoService createProductoService() {
+        return new ProductoService();
     }
-    */
+    
+    /**
+     * Crea e inicializa el servicio de códigos de barras.
+     * Este método construye la cadena de dependencias:
+     * CodigoBarrasDAO → CodigoBarrasService
+     * 
+     * @return CodigoBarrasService inicializado
+     */
+    private CodigoBarrasService createCodigoBarrasService() {
+        return new CodigoBarrasService();
+    }
 }

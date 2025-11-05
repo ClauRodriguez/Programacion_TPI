@@ -16,8 +16,8 @@ import java.util.Scanner; // HAY QUE RESOLVER QUE ESTÉ SOLO EN UN LUGAR
 import model.CategoriaProducto;
 import model.CodigoBarras;
 import model.EnumTipo;
-import model.GeneradorProductosPrueba;
 import service.ProductoService;
+import service.CodigoBarrasService;
 
 /**
  * Controlador de las operaciones del menú (Menu Handler). 
@@ -43,20 +43,36 @@ public class MenuHandler {
     private final Scanner scanner;
 
     /**
-     * Servicio de productos para operaciones CRUD. También proporciona acceso a
-     * CodigoService mediante getCodigoService().
+     * Servicio de productos para operaciones CRUD.
      */
-    private final ProductoService productoService = null; // NO DEBERIA ESTAR EN NULL AQUI (solo está asi para que no de error)
+    private final ProductoService productoService;
+    
+    /**
+     * Servicio de códigos de barras para operaciones CRUD.
+     */
+    private final CodigoBarrasService codigoBarrasService;
 
     /**
-     * CONSTRUCTOR DE MENU con inyección de dependencias Valida que las
-     * dependencias no sean null
+     * CONSTRUCTOR DE MENU con inyección de dependencias.
+     * Valida que las dependencias no sean null.
+     * 
+     * @param scanner Scanner compartido para entrada de usuario
+     * @param productoService Servicio de productos para operaciones CRUD
+     * @param codigoBarrasService Servicio de códigos de barras para operaciones CRUD
      */
-    public MenuHandler(Scanner scanner) { // FALTA AGREGAR AQUI productoServiceImpl Servicio de productos para operaciones CRUD.
+    public MenuHandler(Scanner scanner, ProductoService productoService, CodigoBarrasService codigoBarrasService) {
         if (scanner == null) {
             throw new IllegalArgumentException("Scanner no puede ser null");
         }
-        this.scanner = scanner; // Scanner compartido para entrada de usuario
+        if (productoService == null) {
+            throw new IllegalArgumentException("ProductoService no puede ser null");
+        }
+        if (codigoBarrasService == null) {
+            throw new IllegalArgumentException("CodigoBarrasService no puede ser null");
+        }
+        this.scanner = scanner;
+        this.productoService = productoService;
+        this.codigoBarrasService = codigoBarrasService;
     }
 
     /**
@@ -64,62 +80,86 @@ public class MenuHandler {
      * - IllegalArgumentException: Validaciones de negocio (muestra mensaje al
      * usuario)
      *
-     * // NOTA: Todos los errores deberían capturarse aquí y mostrarse, NO se
+     * NOTA: Todos los errores deberían capturarse aquí y mostrarse, NO se
      * debe propagar al menú principal
      */
     public void crearProducto() {
         try {
+            // Capturar datos (sin validaciones - las hace el Service)
             System.out.print("Nombre: ");
             String nombre = scanner.nextLine().trim();
-            if (nombre.isEmpty()) {
-                System.out.println("El nombre no puede estar vacío.");
-                return;
-            }
-            if (nombre.length() > 120) {
-                System.out.println("El nombre no puede tener más de 120 caracteres.");
-                return;
-            }
+            
             System.out.print("Marca: ");
             String marca = scanner.nextLine().trim();
-            if (marca.isEmpty()) {
-                System.out.println("La marca no puede estar vacía.");
-                return;
-            }
-            if (marca.length() > 80) {
-                System.out.println("La marca no puede tener más de 80 caracteres.");
-                return;
-                }
+            
             System.out.print("Precio: ");
             double precio = Double.parseDouble(scanner.nextLine());
-            if (precio < 0) {
-                System.out.println("El precio debe ser mayor a 0.");
-                return;
-            }
+            
             System.out.print("Peso: ");
             double peso = Double.parseDouble(scanner.nextLine());
-            if (peso < 0) {
-                System.out.println("El peso no puede ser negativo (pero puede ser 0).");
-                return;
-            }
+            
             System.out.print("Stock: ");
             int stock = Integer.parseInt(scanner.nextLine());
-            if (stock < 0) {
-                System.out.println("El stock no puede ser negativo.");
-                return;
-            }
 
-            Producto producto = new Producto(nombre, marca, precio, peso, stock, 0); // COMO SE AGREGA EL ID AUTOMATICAMENTE?
-            System.out.print("Asignar categoría al producto: ");
-            producto.setCategoria();
+            Producto producto = new Producto(nombre, marca, precio, peso, stock, 0);
+            
+            // Seleccionar categoría
+            CategoriaProducto categoria = seleccionarCategoria();
+            producto.setCategoria(categoria);
 
+            // Manejar código de barras si el usuario lo desea
             CodigoBarras codigo = null;
-            System.out.print("¿Desea agregar un codigo? (s/n): "); // Pregunta si desea agregar Codigo de Barras
+            System.out.print("¿Desea agregar un codigo? (s/n): ");
             if (scanner.nextLine().equalsIgnoreCase("s")) {
-                producto.setCodigoBarras(crearCodigo());
+                codigo = crearCodigo();
             }
 
-            // productoService.insertar(producto); // FALTA HACER
-            System.out.println("Creado exitosamente el producto: " + producto);
+            // Guardar producto (el Service valida y maneja errores)
+            try {
+                // Si hay código de barras, guardarlo primero
+                if (codigo != null) {
+                    try {
+                        codigoBarrasService.insertar(codigo);
+                        producto.setCodigoBarras(codigo);
+                    } catch (IllegalArgumentException e) {
+                        // Error de validación del código de barras
+                        System.err.println("Error de validación en código de barras: " + e.getMessage());
+                        return; // Cancelar creación del producto
+                    }
+                }
+                
+                // Guardar producto (validaciones en Service)
+                productoService.insertar(producto);
+                System.out.println("✓ Producto creado exitosamente: " + producto.getNombre());
+                
+            } catch (IllegalArgumentException e) {
+                // Errores de validación - mostrar mensaje amigable
+                System.err.println("Error de validación: " + e.getMessage());
+                
+                // Si se creó el código de barras pero falló el producto, hacer rollback (eliminar código)
+                if (codigo != null && codigo.getId() > 0) {
+                    try {
+                        codigoBarrasService.eliminar(codigo.getId());
+                        System.out.println("✓ Código de barras eliminado debido al error en el producto.");
+                    } catch (Exception ex) {
+                        System.err.println("⚠ Advertencia: Se creó un código de barras (ID: " + codigo.getId() + 
+                                         ") pero no se pudo eliminar después del error. Revise la base de datos.");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error al crear producto: " + e.getMessage());
+                
+                // Si se creó el código de barras pero falló el producto, hacer rollback (eliminar código)
+                if (codigo != null && codigo.getId() > 0) {
+                    try {
+                        codigoBarrasService.eliminar(codigo.getId());
+                        System.out.println("✓ Código de barras eliminado debido al error en el producto.");
+                    } catch (Exception ex) {
+                        System.err.println("⚠ Advertencia: Se creó un código de barras (ID: " + codigo.getId() + 
+                                         ") pero no se pudo eliminar después del error. Revise la base de datos.");
+                    }
+                }
+            }
 
         } catch (NumberFormatException e) {
             System.err.println("Error: Debe ingresar un número válido.");
@@ -143,106 +183,134 @@ public class MenuHandler {
             System.out.println("1. Listar todos los productos");
             System.out.println("2. Listar por ID");
             System.out.println("3. Listar por nombre");
-            System.out.println("4. Listar por categoría"); // SE PUEDE AGREGAR UN METODO SIMILAR POR MARCA
+            System.out.println("4. Listar por categoría");
             System.out.print("Ingrese opción: ");
 
-            List<Producto> productos = GeneradorProductosPrueba.generarProductosDePrueba(); // PROVISORIO HASTA QUE SE PUEDA TRAER LA LISTA DE LA BD
             int subopcion = Integer.parseInt(scanner.nextLine());
+            List<Producto> productos = new ArrayList<>();
 
             switch (subopcion) {
                 case 1:
-                    productos = listarTodosProductos(productos);
+                    productos = listarTodosProductos();
                     break;
                 case 2:
-                    productos = listarPorId(productos);
+                    productos = listarPorId();
                     break;
                 case 3:
-                    productos = listarPorNombre(productos);
+                    productos = listarPorNombre();
                     break;
                 case 4:
-                    productos = listarPorCategoria(productos);
+                    productos = listarPorCategoria();
                     break;
                 default:
                     System.out.println("Opción inválida.");
                     return; // Salir si la opción es inválida
             }
             
-            if (productos.isEmpty()) {
+            if (productos == null || productos.isEmpty()) {
                 System.out.println("No se encontraron productos.");
             } else {
+                System.out.println("\n=== PRODUCTOS ENCONTRADOS ===\n");
                 for (Producto p : productos) {
                     System.out.println(p);
                 }
+                System.out.println("\nTotal: " + productos.size() + " producto(s)");
             }
 
+        } catch (NumberFormatException e) {
+            System.err.println("Error: Debe ingresar un número válido.");
         } catch (Exception e) {
             System.err.println("Error al listar productos: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public List<Producto> listarTodosProductos(List<Producto> productos) {
-        System.out.println("Se listan todos los productos (getAll())");
-        // return productoService.getAll(); // FALTA HACER
-        return productos;
-    }
-
-    public List<Producto> listarPorId(List<Producto> productos) {
-        System.out.print("Ingrese el ID a buscar: ");
-        int id = Integer.parseInt(scanner.nextLine().trim());
-        List<Producto> productoId = new ArrayList<>();
-        if (productoId != null) {
-        productoId.add(productos.get(id-1));
+    private List<Producto> listarTodosProductos() {
+        try {
+            System.out.println("\nBuscando todos los productos...");
+            List<Producto> productos = productoService.getAll();
+            return productos != null ? productos : new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Error al obtener productos: " + e.getMessage());
+            return new ArrayList<>();
         }
-        // return productoService.buscarPorId(id); // FALTA HACER
-        return productoId;
     }
 
-    public List<Producto> listarPorNombre(List<Producto> productos) {
-        System.out.print("Ingrese texto a buscar: ");
-        String filtro = scanner.nextLine().trim();
-        System.out.println("Se listan todos los productos que contienen: " + filtro);
-        List<Producto> productosFiltro = new ArrayList<>();
-        for (Producto producto : productos) {
-            // Convertimos el nombre del producto a minúsculas y vemos si contiene el filtro
-            if (producto.getNombre().toLowerCase().contains(filtro.toLowerCase())) {
-                productosFiltro.add(producto);
+    private List<Producto> listarPorId() {
+        try {
+            System.out.print("Ingrese el ID a buscar: ");
+            int id = Integer.parseInt(scanner.nextLine().trim());
+            Producto producto = productoService.getById(id);
+            List<Producto> resultado = new ArrayList<>();
+            if (producto != null) {
+                resultado.add(producto);
             }
+            return resultado;
+        } catch (NumberFormatException e) {
+            System.err.println("Error: Debe ingresar un número válido.");
+            return new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Error al buscar producto por ID: " + e.getMessage());
+            return new ArrayList<>();
         }
-        // return productoService.buscarPorNombre(filtro); // FALTA HACER
-        return productosFiltro;
     }
 
-    private List<Producto> listarPorCategoria(List<Producto> productos) {
-        CategoriaProducto[] categorias = CategoriaProducto.values();
-        System.out.println("\nSeleccione una opción para la categoría: ");
-
-        for (int i = 0; i < categorias.length; i++) {
-            System.out.println((i + 1) + "). " + categorias[i].name() + " - " + categorias[i].getDescripcion());
-        }
-
-        while (true) {
-            try {
-                System.out.print("\n * Ingrese opción: ");
-                int opcion = Integer.parseInt(scanner.nextLine());
-                int indice = (opcion - 1);
-
-                if (indice >= 0 && indice < categorias.length) {
-                    CategoriaProducto categoriaElegida = categorias[indice];
-                    System.out.println("\n**** Categoría seleccionada: " + categoriaElegida.name() + " ****");
-                    // return productoService.buscarPorCategoria(categoriaElegida); // FALTA HACER
-                    List<Producto> productosCategoria = new ArrayList<>();
-                    for (Producto producto : productos) {
-                        if (producto.getCategoria().equals(categoriaElegida)){
-                            productosCategoria.add(producto);
+    private List<Producto> listarPorNombre() {
+        try {
+            System.out.print("Ingrese texto a buscar en el nombre: ");
+            String filtro = scanner.nextLine().trim();
+            if (filtro.isEmpty()) {
+                System.out.println("El filtro no puede estar vacío.");
+                return new ArrayList<>();
+            }
+            
+            // Buscar por nombre exacto primero
+            Producto producto = productoService.getByNombre(filtro);
+            List<Producto> resultado = new ArrayList<>();
+            
+            if (producto != null) {
+                resultado.add(producto);
+            } else {
+                // Si no hay coincidencia exacta, buscar en todos los productos
+                List<Producto> todos = productoService.getAll();
+                if (todos != null) {
+                    for (Producto p : todos) {
+                        if (p.getNombre() != null && 
+                            p.getNombre().toLowerCase().contains(filtro.toLowerCase())) {
+                            resultado.add(p);
                         }
                     }
-                    return productosCategoria;
-                } else {
-                    System.out.println("La opción elegida (" + opcion + ") está fuera de rango. Debe ingresar una entre 1 y " + categorias.length);
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Error: Debe ingresar un número válido.");
             }
+            return resultado;
+        } catch (Exception e) {
+            System.err.println("Error al buscar productos por nombre: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    private List<Producto> listarPorCategoria() {
+        try {
+            CategoriaProducto categoriaElegida = seleccionarCategoria();
+            System.out.println("\nBuscando productos de la categoría: " + categoriaElegida.name());
+            
+            // Obtener todos los productos y filtrar por categoría
+            List<Producto> todos = productoService.getAll();
+            List<Producto> productosCategoria = new ArrayList<>();
+            
+            if (todos != null) {
+                for (Producto producto : todos) {
+                    if (producto.getCategoria() != null && 
+                        producto.getCategoria().equals(categoriaElegida)) {
+                        productosCategoria.add(producto);
+                    }
+                }
+            }
+            
+            return productosCategoria;
+        } catch (Exception e) {
+            System.err.println("Error al buscar productos por categoría: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
@@ -258,57 +326,68 @@ public class MenuHandler {
             System.out.print("\nIngrese el ID del producto a actualizar: ");
             int id = Integer.parseInt(scanner.nextLine());
 
-            List<Producto> productos = GeneradorProductosPrueba.generarProductosDePrueba(); // PROVISORIO HASTA QUE SE PUEDA TRAER LA LISTA DE LA BD
-            // Producto productoActualizar = productoService.getById(id); // FALTA HACER
+            // Obtener producto de la base de datos
+            Producto productoActualizar = productoService.getById(id);
 
-            if (productos == null) {
-                System.out.println("Producto no encontrado.");
+            if (productoActualizar == null) {
+                System.out.println("Producto no encontrado con ID: " + id);
                 return;
             }
+            
+            System.out.println("\nEl producto a modificar es: " + productoActualizar.getNombre() 
+                    + " - ID: " + productoActualizar.getId());
+            System.out.println("-".repeat(30));
+            System.out.println("Ingrese los datos nuevos (presione Enter para mantener el valor actual):");
 
-            for (int i = 0; i < productos.size(); i++) {
-                if (productos.get(i).getId() == id) {
-                    Producto productoActualizar = productos.get(i);
-                    System.out.println("\nEl producto a modificar es: " + productoActualizar.getNombre() 
-                            + " - ID: " + productoActualizar.getId());
-                    System.out.println("-".repeat(30));
-                    System.out.println("Ingrese los datos nuevos para actualizar el producto.");
+            System.out.print("Nombre actual: " + productoActualizar.getNombre() + "\nIngrese el nuevo nombre: ");
+            String nombre = scanner.nextLine().trim();
+            if (!nombre.isEmpty()) {
+                productoActualizar.setNombre(nombre);
+            }
 
-                    System.out.print("Nombre actual: " + productoActualizar.getNombre() + "\n Ingrese el nuevo nombre: ");
-                    String nombre = scanner.nextLine().trim();
-                    if (!nombre.isEmpty()) {
-                        productoActualizar.setNombre(nombre);
-                    }
+            System.out.print("Marca actual: " + productoActualizar.getMarca() + "\nIngrese la nueva marca: ");
+            String marca = scanner.nextLine().trim();
+            if (!marca.isEmpty()) {
+                productoActualizar.setMarca(marca);
+            }
 
-                    System.out.print("Marca actual: " + productoActualizar.getMarca() + "\n Ingrese la nueva marca: ");
-                    String marca = scanner.nextLine().trim();
-                    if (!marca.isEmpty()) {
-                        productoActualizar.setMarca(marca);
-                    }
+            System.out.print("Precio actual: " + productoActualizar.getPrecio() + "\nIngrese el nuevo precio (Enter para mantener): ");
+            String precioStr = scanner.nextLine().trim();
+            if (!precioStr.isEmpty()) {
+                double precio = Double.parseDouble(precioStr);
+                productoActualizar.setPrecio(precio); // La validación la hace el Service
+            }
 
-                    System.out.print("Precio actual: " + productoActualizar.getPrecio() + "\n Ingrese el nuevo precio : ");
-                    double precio = Double.parseDouble(scanner.nextLine());
-                    if (precio != 0) {
-                        productoActualizar.setPrecio(precio);
-                    }
+            System.out.print("Peso actual: " + productoActualizar.getPeso() + "\nIngrese el nuevo peso (Enter para mantener): ");
+            String pesoStr = scanner.nextLine().trim();
+            if (!pesoStr.isEmpty()) {
+                double peso = Double.parseDouble(pesoStr);
+                productoActualizar.setPeso(peso); // La validación la hace el Service
+            }
 
-                    System.out.print("Peso actual: " + productoActualizar.getPeso() + "\n Ingrese el nuevo peso : ");
-                    double peso = Double.parseDouble(scanner.nextLine());
-                    if (peso != 0) {
-                        productoActualizar.setPeso(peso);
-                    }
+            System.out.print("Stock actual: " + productoActualizar.getStock() + "\nIngrese el nuevo stock (Enter para mantener): ");
+            String stockStr = scanner.nextLine().trim();
+            if (!stockStr.isEmpty()) {
+                int stock = Integer.parseInt(stockStr);
+                productoActualizar.setStock(stock); // La validación la hace el Service
+            }
 
-                    System.out.print("Stock actual: " + productoActualizar.getStock() + "\n Ingrese el nuevo stock : ");
-                    int stock = Integer.parseInt(scanner.nextLine());
-                    if (stock != 0) {
-                        productoActualizar.setStock(stock);
-                    }
+            System.out.print("Categoria actual: " + productoActualizar.getCategoria() + "\n");
+            System.out.print("¿Desea cambiar la categoría? (s/n): ");
+            if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
+                CategoriaProducto nuevaCategoria = seleccionarCategoria();
+                productoActualizar.setCategoria(nuevaCategoria);
+            }
 
-                    System.out.print("Categoria actual: " + productoActualizar.getCategoria() + "\n Ingrese la nueva categoria: ");
-                    productoActualizar.setCategoria();
-
-                    System.out.println("**** Producto actualizado exitosamente: " + productoActualizar + " ****");
-                }
+            // Guardar cambios en la base de datos (validaciones en Service)
+            try {
+                productoService.actualizar(productoActualizar);
+                System.out.println("\n✓ Producto actualizado exitosamente: " + productoActualizar.getNombre());
+            } catch (IllegalArgumentException e) {
+                // Errores de validación - mostrar mensaje amigable
+                System.err.println("Error de validación: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Error al actualizar producto: " + e.getMessage());
             }
 
         } catch (NumberFormatException e) {
@@ -325,41 +404,65 @@ public class MenuHandler {
      * que: - Marca producto.eliminado = TRUE
      */
     public void eliminarProducto() {
-
         try {
             System.out.print("\nIngrese el ID del producto a eliminar: ");
             int id = Integer.parseInt(scanner.nextLine());
 
-            List<Producto> productos = GeneradorProductosPrueba.generarProductosDePrueba(); // PROVISORIO HASTA QUE SE PUEDA TRAER LA LISTA DE LA BD
-            // productoService.eliminar(id); // FALTA COMPLETAR
+            // Obtener producto de la base de datos
+            Producto productoEliminar = productoService.getById(id);
 
-            if (productos == null) {
-                System.out.println("Producto no encontrado.");
+            if (productoEliminar == null) {
+                System.out.println("Producto no encontrado con ID: " + id);
                 return;
             }
 
-            for (int i = 0; i < productos.size(); i++) {
-                if (productos.get(i).getId() == id) {
-                    Producto productoEliminar = productos.get(i);
-                    System.out.println("\nEl producto a eliminar es: " + productoEliminar.getNombre());
-                    System.out.print("\n¿Está seguro de que desea eliminar este producto? (s/n): ");
-                    String confirmacion = scanner.nextLine().trim();
-                    if (confirmacion.equalsIgnoreCase("s")) {
-                        productoEliminar.setEliminado(true);
-                        System.out.println("\n**** Producto eliminado exitosamente ****");
-                    } else {
-                        System.out.println("\nEliminación cancelada.");
-                    }
-                }
+            System.out.println("\nEl producto a eliminar es: " + productoEliminar.getNombre());
+            System.out.print("¿Está seguro de que desea eliminar este producto? (s/n): ");
+            String confirmacion = scanner.nextLine().trim();
+            
+            if (confirmacion.equalsIgnoreCase("s")) {
+                productoService.eliminar(id);
+                System.out.println("\n✓ Producto eliminado exitosamente (soft delete)");
+            } else {
+                System.out.println("\nEliminación cancelada.");
             }
 
         } catch (NumberFormatException e) {
             System.err.println("Error: Debe ingresar un número válido.");
         } catch (Exception e) {
             System.err.println("Error al eliminar producto: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Método auxiliar privado: Permite al usuario seleccionar una categoría de producto.
+     * 
+     * @return CategoriaProducto seleccionada
+     */
+    private CategoriaProducto seleccionarCategoria() {
+        CategoriaProducto[] categorias = CategoriaProducto.values();
+        System.out.println("\nSeleccione una opción para la categoría: ");
+        for (int i = 0; i < categorias.length; i++) {
+            System.out.println((i + 1) + "). " + categorias[i].name() + " - " + categorias[i].getDescripcion());
+        }
+        
+        while (true) {
+            System.out.print("Opción: ");
+            try {
+                int opcion = Integer.parseInt(scanner.nextLine().trim());
+                int indice = opcion - 1;
+                if (indice >= 0 && indice < categorias.length) {
+                    return categorias[indice];
+                } else {
+                    System.out.println("La opción debe estar entre 1 y " + categorias.length);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ingrese un número válido.");
+            }
+        }
+    }
+    
     /**
      * Método auxiliar privado: Crea un objeto Codigo de Barras capturando Valor
      * y observaciones (opcionales).
@@ -370,7 +473,7 @@ public class MenuHandler {
      * @return CodigoBarras nuevo (ID=0)
      */
     
-        private EnumTipo elegirTipoCodigo() {
+    private EnumTipo elegirTipoCodigo() {
     EnumTipo[] tipos = EnumTipo.values();
     System.out.println("Seleccione el tipo de Código de Barras:");
     for (int i = 0; i < tipos.length; i++) {
@@ -402,6 +505,11 @@ private CodigoBarras crearCodigo() {
 
     System.out.print("Observaciones (opcional): ");
     String observaciones = scanner.nextLine().trim();
+    
+    // IMPORTANTE: Guardar el valor TAL CUAL, sin convertir a null
+    // Si está vacío, guardar como cadena vacía, NO como null
+    // Esto asegura que si el usuario ingresa algo, se guarde
+    String observacionesFinal = observaciones; // NO convertir a null
 
-    return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observaciones);
+    return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
 }}
