@@ -34,25 +34,37 @@ public class DatabaseConnection {
         }
     }
 
+    /**
+     * Inicializa la base de datos si no existe.
+     * Debe llamarse al inicio de la aplicación antes de usar getConnection().
+     */
+    public static void inicializarBaseDatos() throws SQLException {
+        try {
+            // Intentar conectar para verificar si existe
+            try (Connection conn = DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD)) {
+                // Si se conecta, la BD existe
+                return;
+            }
+        } catch (SQLException e) {
+            // Si la BD no existe (error 1049), crearla
+            if (e.getErrorCode() == 1049 || e.getMessage().contains("Unknown database")) {
+                System.out.println("⚠ Base de datos '" + DB_NAME + "' no encontrada. Intentando crearla...");
+                crearBaseDatosSiNoExiste();
+            } else {
+                // Si es otro error, lanzarlo
+                throw e;
+            }
+        }
+    }
+    
     public static Connection getConnection() throws SQLException {
         if (URL_WITH_DB == null || URL_WITH_DB.isEmpty() || USER == null || USER.isEmpty()) {
             throw new SQLException("Configuración de la base de datos incompleta o inválida.");
         }
         
         // Intentar conectar a la base de datos
-        try {
-            return DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD);
-        } catch (SQLException e) {
-            // Si la BD no existe (error 1049), intentar crearla
-            if (e.getErrorCode() == 1049 || e.getMessage().contains("Unknown database")) {
-                System.out.println("⚠ Base de datos '" + DB_NAME + "' no encontrada. Intentando crearla...");
-                crearBaseDatosSiNoExiste();
-                // Intentar conectar nuevamente
-                return DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD);
-            }
-            // Si es otro error, lanzarlo
-            throw e;
-        }
+        // Nota: La BD debe estar inicializada previamente con inicializarBaseDatos()
+        return DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD);
     }
     
     /**
@@ -70,7 +82,7 @@ public class DatabaseConnection {
             // Usar la base de datos
             stmt.executeUpdate("USE " + DB_NAME);
             
-            // Crear tabla codigo_barras
+            // Tabla codigo_barras
             String sqlCodigoBarras = "CREATE TABLE IF NOT EXISTS codigo_barras (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "tipo VARCHAR(10) NOT NULL COMMENT 'EAN13, EAN8, UPC', " +
@@ -83,9 +95,8 @@ public class DatabaseConnection {
                 "INDEX idx_tipo (tipo)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
             stmt.executeUpdate(sqlCodigoBarras);
-            System.out.println("✓ Tabla 'codigo_barras' creada/verificada.");
             
-            // Crear tabla producto
+            // Tabla producto
             String sqlProducto = "CREATE TABLE IF NOT EXISTS producto (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "nombre VARCHAR(120) NOT NULL, " +
@@ -107,7 +118,6 @@ public class DatabaseConnection {
                 "ON UPDATE CASCADE" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
             stmt.executeUpdate(sqlProducto);
-            System.out.println("✓ Tabla 'producto' creada/verificada.");
             
             System.out.println("✓ Base de datos y tablas inicializadas correctamente.\n");
             
