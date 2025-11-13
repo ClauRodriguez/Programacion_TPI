@@ -11,7 +11,7 @@ public class DatabaseConnection {
     private static final String HOST = "localhost";
     private static final String PORT = "3307";
     private static final String USER = "root";
-    private static final String PASSWORD = "Claudev1!";
+    private static final String PASSWORD = "";
     
     // Detectar qué driver se está usando (MySQL o MariaDB)
     private static final String JDBC_PROTOCOL;
