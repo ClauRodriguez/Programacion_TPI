@@ -7,24 +7,29 @@ import java.sql.Statement;
 
 public class DatabaseConnection {
     // Configuración para MySQL (compatible con MariaDB también)
-    // Para MySQL: "jdbc:mysql://localhost:3306/depositotpi"
-    // Para MariaDB: "jdbc:mariadb://localhost:3306/depositotpi"
     private static final String DB_NAME = "depositotpi";
     private static final String HOST = "localhost";
     private static final String PORT = "3307";
-    private static final String URL_WITH_DB = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME;
-    private static final String URL_WITHOUT_DB = "jdbc:mysql://" + HOST + ":" + PORT;
     private static final String USER = "root";
     private static final String PASSWORD = "Claudev1!";
+    
+    // Detectar qué driver se está usando (MySQL o MariaDB)
+    private static final String JDBC_PROTOCOL;
+    private static final String URL_WITH_DB;
+    private static final String URL_WITHOUT_DB;
 
     static {
+        String protocol = "mysql"; // Por defecto MySQL
+        
         try {
             // Intentar cargar driver de MySQL primero (más común)
             Class.forName("com.mysql.cj.jdbc.Driver");
+            protocol = "mysql";
         } catch (ClassNotFoundException e) {
             try {
                 // Si no está MySQL, intentar con MariaDB
                 Class.forName("org.mariadb.jdbc.Driver");
+                protocol = "mariadb";
             } catch (ClassNotFoundException e2) {
                 throw new RuntimeException(
                     "Error: No se encontró el driver JDBC. " +
@@ -32,6 +37,10 @@ public class DatabaseConnection {
                 );
             }
         }
+        
+        JDBC_PROTOCOL = protocol;
+        URL_WITH_DB = "jdbc:" + JDBC_PROTOCOL + "://" + HOST + ":" + PORT + "/" + DB_NAME;
+        URL_WITHOUT_DB = "jdbc:" + JDBC_PROTOCOL + "://" + HOST + ":" + PORT;
     }
 
     /**
@@ -106,7 +115,7 @@ public class DatabaseConnection {
                 "peso DECIMAL(10,3), " +
                 "stock INT DEFAULT 0, " +
                 "eliminado BOOLEAN DEFAULT FALSE, " +
-                "codigo_barras_id INT, " +
+                "codigo_barras_id INT UNIQUE, " +
                 "INDEX idx_eliminado (eliminado), " +
                 "INDEX idx_categoria (categoria), " +
                 "INDEX idx_nombre (nombre), " +
