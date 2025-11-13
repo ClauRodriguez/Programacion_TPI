@@ -109,7 +109,7 @@ public class MenuHandler {
 
             // Manejar código de barras si el usuario lo desea
             CodigoBarras codigo = null;
-            System.out.print("¿Desea agregar un codigo? (s/n): ");
+            System.out.print("¿Desea agregar un codigo de barras? (s/n): ");
             if (scanner.nextLine().equalsIgnoreCase("s")) {
                 codigo = crearCodigo();
             }
@@ -130,7 +130,7 @@ public class MenuHandler {
                 
                 // Guardar producto (validaciones en Service)
                 productoService.insertar(producto);
-                System.out.println("✓ Producto creado exitosamente: " + producto.getNombre());
+                System.out.println("✓ Producto creado exitosamente: " + producto.toString());
                 
             } catch (IllegalArgumentException e) {
                 // Errores de validación - mostrar mensaje amigable
@@ -339,13 +339,13 @@ public class MenuHandler {
             System.out.println("-".repeat(30));
             System.out.println("Ingrese los datos nuevos (presione Enter para mantener el valor actual):");
 
-            System.out.print("Nombre actual: " + productoActualizar.getNombre() + "\nIngrese el nuevo nombre: ");
+            System.out.print("Nombre actual (Enter para mantener): " + productoActualizar.getNombre() + "\nIngrese el nuevo nombre(Enter para mantener): ");
             String nombre = scanner.nextLine().trim();
             if (!nombre.isEmpty()) {
                 productoActualizar.setNombre(nombre);
             }
 
-            System.out.print("Marca actual: " + productoActualizar.getMarca() + "\nIngrese la nueva marca: ");
+            System.out.print("Marca actual: " + productoActualizar.getMarca() + "\nIngrese la nueva marca (Enter para mantener): ");
             String marca = scanner.nextLine().trim();
             if (!marca.isEmpty()) {
                 productoActualizar.setMarca(marca);
