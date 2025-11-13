@@ -116,49 +116,23 @@ public class MenuHandler {
 
             // Guardar producto (el Service valida y maneja errores)
             try {
-                // Si hay código de barras, guardarlo primero
+                // Si hay código de barras, usar método transaccional que inserta ambos en una sola transacción
                 if (codigo != null) {
-                    try {
-                        codigoBarrasService.insertar(codigo);
-                        producto.setCodigoBarras(codigo);
-                    } catch (IllegalArgumentException e) {
-                        // Error de validación del código de barras
-                        System.err.println("Error de validación en código de barras: " + e.getMessage());
-                        return; // Cancelar creación del producto
-                    }
+                    productoService.insertarConCodigoBarras(producto, codigo);
+                    System.out.println("✓ Producto con código de barras creado exitosamente: " + producto.getNombre());
+                } else {
+                    // Si no hay código de barras, insertar solo el producto
+                    productoService.insertar(producto);
+                    System.out.println("✓ Producto creado exitosamente: " + producto.getNombre());
                 }
-                
-                // Guardar producto (validaciones en Service)
-                productoService.insertar(producto);
-                System.out.println("✓ Producto creado exitosamente: " + producto.getNombre());
                 
             } catch (IllegalArgumentException e) {
                 // Errores de validación - mostrar mensaje amigable
+                // El rollback se maneja automáticamente en el Service
                 System.err.println("Error de validación: " + e.getMessage());
-                
-                // Si se creó el código de barras pero falló el producto, hacer rollback (eliminar código)
-                if (codigo != null && codigo.getId() > 0) {
-                    try {
-                        codigoBarrasService.eliminar(codigo.getId());
-                        System.out.println("✓ Código de barras eliminado debido al error en el producto.");
-                    } catch (Exception ex) {
-                        System.err.println("⚠ Advertencia: Se creó un código de barras (ID: " + codigo.getId() + 
-                                         ") pero no se pudo eliminar después del error. Revise la base de datos.");
-                    }
-                }
             } catch (Exception e) {
+                // Errores de base de datos - el rollback se maneja automáticamente en el Service
                 System.err.println("Error al crear producto: " + e.getMessage());
-                
-                // Si se creó el código de barras pero falló el producto, hacer rollback (eliminar código)
-                if (codigo != null && codigo.getId() > 0) {
-                    try {
-                        codigoBarrasService.eliminar(codigo.getId());
-                        System.out.println("✓ Código de barras eliminado debido al error en el producto.");
-                    } catch (Exception ex) {
-                        System.err.println("⚠ Advertencia: Se creó un código de barras (ID: " + codigo.getId() + 
-                                         ") pero no se pudo eliminar después del error. Revise la base de datos.");
-                    }
-                }
             }
 
         } catch (NumberFormatException e) {

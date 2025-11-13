@@ -5,8 +5,10 @@
 package service;
 
 import DAO.CodigoBarrasDAO;
+import config.DatabaseConnection;
 import model.CodigoBarras;
-
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class CodigoBarrasService implements GenericService<CodigoBarras> {
@@ -17,31 +19,83 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
     public void insertar(CodigoBarras entidad) throws Exception {
         validarCodigoBarras(entidad);
         
-        // Validar UNIQUE: verificar si ya existe un código con el mismo valor
-        CodigoBarras existente = codigoBarrasDAO.getByValor(entidad.getValor());
-        if (existente != null && !existente.isEliminado()) {
-            throw new IllegalArgumentException("Ya existe un código de barras con el valor: " + entidad.getValor());
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);  // Desactivar auto-commit para manejar transacción
+            
+            // Validar UNIQUE: verificar si ya existe un código con el mismo valor (en la misma transacción)
+            CodigoBarras existente = codigoBarrasDAO.getByValor(entidad.getValor(), conn);
+            if (existente != null && !existente.isEliminado()) {
+                throw new IllegalArgumentException("Ya existe un código de barras con el valor: " + entidad.getValor());
+            }
+            
+            codigoBarrasDAO.insertar(entidad, conn);  // Pasar conexión al DAO
+            
+            conn.commit();  // Commit si todo sale bien
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();  // Rollback en caso de error
+                } catch (SQLException rollbackEx) {
+                    throw new Exception("Error al hacer rollback: " + rollbackEx.getMessage(), e);
+                }
+            }
+            throw e;  // Re-lanzar excepción original
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);  // Restaurar auto-commit
+                    conn.close();
+                } catch (SQLException closeEx) {
+                    System.err.println("Error al cerrar conexión: " + closeEx.getMessage());
+                }
+            }
         }
-        
-        codigoBarrasDAO.insertar(entidad);
     }
 
     @Override
     public void actualizar(CodigoBarras entidad) throws Exception {
         validarCodigoBarras(entidad);
         
-        // Validar UNIQUE solo si cambió el valor
-        CodigoBarras existente = codigoBarrasDAO.getById(entidad.getId());
-        if (existente != null && !existente.getValor().equals(entidad.getValor())) {
-            // El valor cambió, verificar que no exista otro con el nuevo valor
-            CodigoBarras otroConMismoValor = codigoBarrasDAO.getByValor(entidad.getValor());
-            if (otroConMismoValor != null && !otroConMismoValor.isEliminado() && 
-                otroConMismoValor.getId() != entidad.getId()) {
-                throw new IllegalArgumentException("Ya existe otro código de barras con el valor: " + entidad.getValor());
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);  // Desactivar auto-commit para manejar transacción
+            
+            // Validar UNIQUE solo si cambió el valor (en la misma transacción)
+            CodigoBarras existente = codigoBarrasDAO.getById(entidad.getId());
+            if (existente != null && !existente.getValor().equals(entidad.getValor())) {
+                // El valor cambió, verificar que no exista otro con el nuevo valor
+                CodigoBarras otroConMismoValor = codigoBarrasDAO.getByValor(entidad.getValor(), conn);
+                if (otroConMismoValor != null && !otroConMismoValor.isEliminado() && 
+                    otroConMismoValor.getId() != entidad.getId()) {
+                    throw new IllegalArgumentException("Ya existe otro código de barras con el valor: " + entidad.getValor());
+                }
+            }
+            
+            codigoBarrasDAO.actualizar(entidad, conn);  // Pasar conexión al DAO
+            
+            conn.commit();  // Commit si todo sale bien
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();  // Rollback en caso de error
+                } catch (SQLException rollbackEx) {
+                    throw new Exception("Error al hacer rollback: " + rollbackEx.getMessage(), e);
+                }
+            }
+            throw e;  // Re-lanzar excepción original
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);  // Restaurar auto-commit
+                    conn.close();
+                } catch (SQLException closeEx) {
+                    System.err.println("Error al cerrar conexión: " + closeEx.getMessage());
+                }
             }
         }
-        
-        codigoBarrasDAO.actualizar(entidad);
     }
     
     /**
@@ -76,7 +130,33 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 
     @Override
     public void eliminar(int id) throws Exception {
-        codigoBarrasDAO.eliminar(id);
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);  // Desactivar auto-commit para manejar transacción
+            
+            codigoBarrasDAO.eliminar(id, conn);  // Pasar conexión al DAO
+            
+            conn.commit();  // Commit si todo sale bien
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();  // Rollback en caso de error
+                } catch (SQLException rollbackEx) {
+                    throw new Exception("Error al hacer rollback: " + rollbackEx.getMessage(), e);
+                }
+            }
+            throw e;  // Re-lanzar excepción original
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);  // Restaurar auto-commit
+                    conn.close();
+                } catch (SQLException closeEx) {
+                    System.err.println("Error al cerrar conexión: " + closeEx.getMessage());
+                }
+            }
+        }
     }
 
     @Override
