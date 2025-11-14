@@ -1,138 +1,144 @@
-📦 Proyecto TPI – Programación II & Base de Datos
-Relación UML 1→1 Unidireccional: Producto → Código de Barras
+Trabajo Practico Integrador de Base de Datos y Programación 2: Relación unidireccional UML Producto → Código de Barras
+Este proyecto es una aplicación de consola desarrollada en Java que implementa un sistema de gestión de productos y códigos de barras utilizando una arquitectura multicapa, patrón DAO y relación 1→1 unidireccional obligatoria.
 
+A) Grupo 117: Relación Producto - Código de Barras
 
--
+B) Autores
+1) Hernan Cóceres
 
+2) Gaston Alberto Cejas
 
+3) Hernan Bula
 
+4) Claudio Rodriguez
 
+C) Tecnologías Utilizadas
+1) Java 21 (versión recomendada)
 
+2) JDBC para conexión a base de datos
 
+3) MySQL/MariaDB como sistema gestor de base de datos
 
-Este proyecto es una aplicación de consola desarrollada en Java, con arquitectura multicapa, patrón DAO, transacciones atómicas y una relación 1→1 unidireccional obligatoria entre Producto y Código de Barras.
-Incluye creación automática de la base de datos, validaciones de negocio y eliminación lógica.
+4) XAMPP para servidor web y base de datos
 
-📚 Tabla de Contenidos
+5) Apache NetBeans como IDE de desarrollo
 
-📦 Proyecto TPI
+6) DBeaver para gestión y consultas de base de datos (opcional)
 
-👥 Autores
+D) Arquitectura de 5 capas (Config, Models, DAO, Service, Main)
 
-🧰 Tecnologías Utilizadas
+E) Configuración del Entorno - Paso a Paso
+1. Instalación de Software Requerido
+a) Java Development Kit (JDK) 21
 
-🧱 Arquitectura del Proyecto
+Descargar e instalar JDK 21 desde Oracle o OpenJDK
 
-⚙️ Configuración del Entorno
+Configurar variable de entorno JAVA_HOME
 
-🗄️ Base de Datos
+Verificar instalación: java -version
 
-🏗️ Estructura de Carpetas
+b) XAMPP
+Descargar e instalar XAMPP desde Apache Friends
 
-▶️ Ejecución del Proyecto
+Iniciar el Panel de Control de XAMPP
 
-🚀 Funcionalidades
+Activar los servicios:
 
-📘 Características Técnicas
+Apache (servidor web)
 
-✔️ Validaciones
+MySQL/MariaDB (base de datos)
 
-📋 Checklist de Cumplimiento TPI
+Verificar que MySQL esté corriendo en puerto 3306 (preferentemente)
 
-🔐 Seguridad
+c) Apache NetBeans
+Descargar e instalar Apache NetBeans desde netbeans.apache.org
 
-🔗 Relación UML 1→1
+Asegurarse de que NetBeans detecte el JDK 21
 
-🪵 Logs y Debugging
+d) DBeaver (Opcional pero Recomendado)
+Descargar e instalar DBeaver desde dbeaver.io
 
-👥 Autores
-
-Grupo 117 – Proyecto Producto → Código de Barras
-
-| Nombre               | Rol        |
-| -------------------- | ---------- |
-| Hernan Cóceres       | Desarrollo |
-| Gaston Alberto Cejas | Desarrollo |
-| Hernan Bula          | Desarrollo |
-| Claudio Rodriguez    | Desarrollo |
-
-
-🧰 Tecnologías Utilizadas
-
-Java 21
-
-JDBC
-
-MySQL/MariaDB
-
-XAMPP
-
-NetBeans IDE
-
-DBeaver (opcional)
-
-🧱 Arquitectura del Proyecto
-
-Este proyecto está estructurado bajo una arquitectura profesional de 5 capas, siguiendo el patrón DAO + Services:
-
-Config  
-Models  
-DAO  
-Service  
-Main (UI)
-
-
-⚙️ Configuración del Entorno
-1. Instalación de Software
-🔸 Java JDK 21
-java -version
-
-🔸 XAMPP
-
-Activar:
-
-Apache
-
-MySQL (puerto 3306)
-
-🔸 NetBeans
-
-Asegurarse de que detecte JDK 21.
-
-🔸 DBeaver (opcional)
-
-Para visualizar la BD.
+Útil para visualizar y gestionar la base de datos
 
 2. Configuración de la Base de Datos
-✔️ Conexión en DBeaver
+Conectar MySQL con DBeaver:
+Abrir DBeaver
+
+Click en "Nueva Conexión"
+
+Seleccionar "MySQL"
+
+Configurar parámetros:
 
 Host: localhost
 
 Puerto: 3306
 
+Base de datos: depositotpi (se creará automáticamente)
+
 Usuario: root
 
-Contraseña: (vacía)
+Contraseña: "" (vacía por defecto en XAMPP)
 
-✔️ Creación Automática
+Testear conexión
 
-La app crea:
+Creación Automática de la Base de Datos:
+La aplicación crea automáticamente la base de datos y tablas al ejecutarse por primera vez mediante la clase DatabaseConnection.
 
-depositotpi
+3. Configuración del Proyecto en NetBeans
+Importar el Proyecto:
+Abrir NetBeans
 
-producto
+File → Open Project
 
-codigo_barras
+Seleccionar la carpeta del proyecto
 
-al ejecutarse por primera vez.
+Asegurarse de que el JDK 21 esté configurado
 
-3. Dependencias en NetBeans
+Configurar Dependencias:
+El proyecto requiere el conector MySQL/MariaDB
 
-Agregar MySQL Connector/J:
+Descargar: MySQL Connector/J
 
-Properties → Libraries → Add JAR/Folder
+Agregar el JAR al classpath del proyecto:
 
-🗄️ Base de Datos
+Click derecho en el proyecto → Properties
+
+Libraries → Add JAR/Folder
+
+Seleccionar mysql-connector-java-8.0.x.jar
+
+Notas Importantes
+Para la Ejecución Correcta:
+XAMPP debe estar activo antes de ejecutar la aplicación
+
+No modificar manualmente la base de datos mientras la aplicación corre
+
+Primera ejecución puede ser más lenta (creación de BD)
+
+Los IDs son autoincrementales, asignados por la base de datos
+
+Soporte y Troubleshooting
+Problemas Comunes:
+Error de conexión a BD:
+
+Verificar que XAMPP esté ejecutándose
+
+Confirmar que MySQL esté en puerto 3306
+
+Driver no encontrado:
+
+Verificar que el connector JAR esté en el classpath
+
+Permisos de base de datos:
+
+Usuario root sin contraseña por defecto
+
+4. Estructura de la Base de Datos
+La aplicación crea automáticamente las siguientes tablas:
+
+Tabla producto
+sql
 CREATE TABLE producto (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(120) NOT NULL,
@@ -144,9 +150,8 @@ CREATE TABLE producto (
     eliminado BOOLEAN DEFAULT FALSE,
     codigo_barras_id INT
 );
-
-
-Tabla: codigo_barras
+Tabla codigo_barras
+sql
 CREATE TABLE codigo_barras (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo VARCHAR(10) NOT NULL COMMENT 'EAN13, EAN8, UPC',
@@ -155,166 +160,135 @@ CREATE TABLE codigo_barras (
     observaciones VARCHAR(255),
     eliminado BOOLEAN DEFAULT FALSE
 );
-
-
-🏗️ Estructura de Carpetas
+E) Arquitectura del Proyecto
+Estructura de Capas (5 capas requeridas):
+text
 src/
 
 ├── config/
 
-│   └── DatabaseConnection.java
+│   └── DatabaseConnection.java      # Gestión de conexión BD
 
-│
 ├── models/
 
-│   ├── Base.java
+│   ├── Base.java                    # Clase abstracta con id y eliminado
 
-│   ├── Producto.java
+│   ├── Producto.java               # Entidad A (Producto)
 
-│   ├── CodigoBarras.java
+│   ├── CodigoBarras.java           # Entidad B (Código de Barras)
 
-│   ├── CategoriaProducto.java
+│   ├── CategoriaProducto.java      # Enum de categorías
 
-│   └── EnumTipo.java
+│   └── EnumTipo.java               # Enum tipos de código
 
-│
 ├── dao/
 
-│   ├── GenericDAO.java
+│   ├── GenericDAO.java             # Interfaz genérica CRUD
 
-│   ├── ProductoDAO.java
+│   ├── ProductoDAO.java            # DAO específico Producto
 
-│   └── CodigoBarrasDAO.java
+│   └── CodigoBarrasDAO.java        # DAO específico Código Barras
 
-│
 ├── service/
 
-│   ├── GenericService.java
+│   ├── GenericService.java          # Interfaz genérica servicios
 
-│   ├── ProductoService.java
+│   ├── ProductoService.java         # Lógica negocio Producto
 
-│   └── CodigoBarrasService.java
+│   └── CodigoBarrasService.java     # Lógica negocio Código Barras
 
-│
 └── main/
 
-    ├── AppMenu.java
+    ├── AppMenu.java                 # Orquestador principal
     
-    ├── MenuHandler.java
+    ├── MenuHandler.java            # Controlador de operaciones
     
-    ├── MenuDisplay.java
+    ├── MenuDisplay.java            # Vista del menú
     
-    └── main.java
+    └── main.java                   # Punto de entrada
 
-▶️ Ejecución del Proyecto
-Primera ejecución
+F) Ejecución del Proyecto
+Primera Ejecución:
+Asegurarse de que XAMPP esté ejecutándose
 
-✔ Encender XAMPP
-✔ Ejecutar en NetBeans
-✔ Creación automática de BD y tablas
-✔ Inicio del menú principal
+En NetBeans: Click derecho en el proyecto → Run
 
-🚀 Funcionalidades
-🟢 CRUD Completo
+La aplicación:
 
-Crear producto (con código obligatorio)
+Verificará la conexión a la base de datos
 
-Editar producto y su código de barras
+Creará automáticamente la BD depositotpi si no existe
 
-Listar por:
+Creará las tablas producto y codigo_barras
 
-ID
+Iniciará el menú principal
 
-Nombre
+Flujo Normal:
+El sistema mostrará el menú principal con opciones CRUD
 
-Categoría
+Todas las operaciones son transaccionales
 
-Eliminación lógica
+La relación Producto → CódigoBarras es obligatoria
 
-🟢 Transacciones
+G) Funcionalidades Implementadas
+a) CRUD Completo (Create, Read, Update, Delete)
+b) Crear Producto: Con código de barras obligatorio
+c) Listar Productos: Todos, por ID, por nombre, por categoría
+d) Actualizar Producto: Datos del producto y su código de barras
+e) Eliminar Producto: Borrado lógico (soft delete)
 
-Commit/Rollback asegurado
+H) Características Técnicas Cumplidas
+a) Relación 1→1 unidireccional obligatoria entre Producto y CódigoBarras
+b) Arquitectura de 5 capas bien definidas
+c) Patrón DAO con interfaz genérica
+d) Transacciones atómicas para operaciones compuestas
+e) Borrado lógico en todas las entidades
+f) Validaciones exhaustivas en capa de servicio
+g) Manejo robusto de excepciones
+h) Uso de PreparedStatement para prevenir SQL injection
 
-🟢 Validaciones de negocio
+I) Validaciones Implementadas
+a) Campos obligatorios y longitudes máximas
+b) Formatos de precio y peso (números positivos)
+c) Unicidad de códigos de barras
+d) Integridad referencial
+e) Validación de categorías y tipos enumerados
 
-Longitudes
+J) Cumplimiento de Requisitos del TPI
+Requisito	Cumplimiento
+Arquitectura 5 capas	-----> Config, Models, DAO, Service, Main
+Relación 1→1 unidireccional	-----> Producto → CódigoBarras (obligatoria)
+Patrón DAO con GenericDAO	-----> Interfaces e implementaciones
+Transacciones commit/rollback	-----> Operaciones atómicas
+Borrado lógico	-----> Campo eliminado en todas las entidades
+Validaciones exhaustivas	-----> Capa Service con reglas de negocio
+CRUD completo	-----> Todas las operaciones para A y B
+Búsquedas por campo relevante	-----> 4 tipos de búsqueda
+Manejo de excepciones	-----> Try-catch y mensajes claros
+PreparedStatement	-----> En todas las operaciones DAO
 
-Formatos
+Características de Seguridad:
+a) Uso de PreparedStatement previene inyección SQL
+b) Validaciones en frontend y backend
+c) Manejo seguro de conexiones con try-with-resources
+d) Transacciones aseguran consistencia de datos
 
-Unicidad
+K) Estructura de la Relación 1→1
+En Código Java:
+En la clase Producto -----> private CodigoBarras codigoBarras;  // Relación unidireccional
 
-Integridad
+En la base de datos
+producto.codigo_barras_id → codigo_barras.id -----> Características de la Relación: Unidireccional: Solo Producto conoce a CódigoBarras
 
-📘 Características Técnicas
+a) Obligatoria: Todo producto debe tener un código de barras
 
-Relación 1→1 unidireccional obligatoria
+b) Transaccional: Inserción atómica de ambas entidades
 
-Arquitectura 5 capas
+c) Integridad: Clave foránea con restricciones
 
-Patrón DAO
+L) Logs y Debugging:
+Los mensajes de error se muestran en consola
 
-Transacciones atómicas
+Operaciones exitosas se confirman con ✓
 
-Borrado lógico
-
-Manejo de excepciones
-
-PreparedStatement en todas las consultas
-
-Base de datos autogenerada
-
-✔️ Validaciones
-
-Campos obligatorios
-
-Precio y peso positivos
-
-Código de barras único
-
-Categorías y tipos validados por enums
-
-Integridad referencial mantenida
-
-📋 Checklist de Cumplimiento TPI
-| Requisito                   | Estado |
-| --------------------------- | ------ |
-| 5 capas                     | ✔️     |
-| Relación 1→1 unidireccional | ✔️     |
-| DAO genérico                | ✔️     |
-| CRUD completo               | ✔️     |
-| Búsquedas por campos        | ✔️     |
-| Eliminación lógica          | ✔️     |
-| Validaciones                | ✔️     |
-| Transacciones               | ✔️     |
-| Manejo excepciones          | ✔️     |
-| PreparedStatement           | ✔️     |
-
-🔐 Seguridad
-
-Prevención de SQL Injection
-
-Validaciones en frontend y backend
-
-try-with-resources para conexiones
-
-Transacciones para integridad
-
-🔗 Relación UML 1→1
-En Java
-private CodigoBarras codigoBarras; // Relación unidireccional
-
-En la BD
-producto.codigo_barras_id → codigo_barras.id
-
-
-📌 El producto conoce su código, pero no al revés.
-
-🪵 Logs y Debugging
-
-Errores descriptivos
-
-Mensajes ✓ para operaciones exitosas
-
-Validaciones claras
-
-Seguimiento por consola
+Validaciones fallidas muestran mensajes descriptivos
