@@ -75,6 +75,9 @@ public class MenuHandler {
         this.codigoBarrasService = codigoBarrasService;
     }
 
+    
+    // METODOS PRODUCTOS
+    
     /**
      * Opción 1: Crear nueva producto (con codigo opcional). Manejo de errores:
      * - IllegalArgumentException: Validaciones de negocio (muestra mensaje al
@@ -404,6 +407,187 @@ public class MenuHandler {
         }
     }
 
+    
+    // NUEVO FALTA HACER
+    /**
+     * Opción 5: Asignar Codigo a Producto. // FALTA HACER
+     *
+     */
+    public void asignarCodigoAProducto() {
+
+    }
+    
+    
+    // METODOS CODIGO DE BARRAS
+    
+    
+    private CodigoBarras crearCodigoBarras() {
+        int id = 0; // lo asignará la BD posteriormente // REVISAR QUE ID DEBE SER Long
+        EnumTipo tipo = elegirTipoCodigo(); // <-- ahora sí es EnumTipo
+
+        String valor = validarEntradaString(scanner, "Valor", 12);
+
+        LocalDate fechaAsignacion = LocalDate.now();
+
+        String observaciones = validarEntradaString(scanner, "Observaciones (opcional):");
+
+        // IMPORTANTE: Guardar el valor TAL CUAL, sin convertir a null
+        // Si está vacío, guardar como cadena vacía, NO como null
+        // Esto asegura que si el usuario ingresa algo, se guarde
+        String observacionesFinal = observaciones; // NO convertir a null
+
+        return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
+    }
+  
+    
+     /**
+     * Opción 6: Crear codigo de barras independiente (sin asociar a producto).
+     *
+     * 1. Llama a crearCodigoBarras() para capturar valor, tipo, observaciones
+     * 2. Invoca codigoBarrasService.insertar() que:
+     *    - Valida valor y tipo
+     *    - Inserta en BD y asigna ID autogenerado
+     * 3. Muestra Codigo generado con su ID generado
+     *
+     * USO: Pre-cargar codigos en la BD
+     */
+    public void crearCodigoBarrasIndependiente() {
+        try {
+            CodigoBarras codigoBarras = crearCodigoBarras();
+            System.out.println("**** Creado exitosamente ****\nCodigo de Barra: \n - ID: " + codigoBarras.getId() + "\n - Valor: " + codigoBarras.getValor() + "\n - Tipo: " + codigoBarras.getTipo());
+        } catch (Exception e) {
+            System.err.println("Error al crear el Codigo de barras: " + e.getMessage());
+        }
+    }
+    
+    //NUEVO 
+    /**
+     * Opción 7: Listar todos los Codigod de Barras activos.
+     *
+     * Muestra: ID, valor y tipo
+     *
+     * Usos
+     * - Ver codigos de barras disponibles antes de asignar a producto
+     * - Consultar ID de codigo para actualizar o eliminar
+     * - Solo muestra codigos con eliminado=FALSE (soft delete).
+     */
+    public void listarCodigoBarras() {
+        System.out.println("\nBuscando todos los códogos de barra...");
+        try {
+            List<CodigoBarras> codigos = codigoBarrasService.getAll();
+            if (codigos.isEmpty()) {
+                System.out.println("No se encontraron codigos de barras.");
+                return;
+            }
+            for (CodigoBarras codigo : codigos) {
+                System.out.println("Codigo de Barra: \n - ID: " + codigo.getId() + "\n - Valor: " + codigo.getValor() + "\n - Tipo: " + codigo.getTipo());
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar códogos de barra: " + e.getMessage());
+        }
+    }
+    
+    
+    // NUEVO
+     /**
+     * Opción 8: Actualizar Código de Barras por ID.
+     *
+     * 1. Solicita ID delCódigo de Barras 
+     * 2. Obtiene Código de Barras actual de la BD
+     * 3. Muestra valores actuales y permite actualizar:
+     *    - Valor (Enter para mantener actual)
+     *    - Observaciones (Opcional - Enter para mantener actual)
+     * 4. Invoca CodigoBarrasService.actualizar()
+     */
+    public void actualizarCodigoBarrasPorId() {
+        try {
+            int id = validarIntPositivo("ID del codigo de barras a actualizar: ", scanner); // REVISAR QUE ID DEBE SER Long
+
+            // Obtener codigo de la base de datos
+            CodigoBarras codigoBarrasActualizar = codigoBarrasService.getById(id);
+
+            if (codigoBarrasActualizar == null) {
+                System.out.println("Codigo de Barras no encontrado con ID: " + id);
+                return;
+            }
+
+            System.out.println("\nEl Codigo de Barras a modificar es: " + codigoBarrasActualizar.getValor()
+                    + " - ID: " + codigoBarrasActualizar.getId());
+            System.out.println("-".repeat(30));
+            System.out.println("Ingrese los datos nuevos:");
+
+            codigoBarrasActualizar.setTipo(elegirTipoCodigo());
+            
+            codigoBarrasActualizar.setFechaAsignacion(LocalDate.now());
+
+            System.out.print("Valor actual (Enter para mantener el valor actual): " + codigoBarrasActualizar.getValor() + "\nO ingrese el nuevo valor: ");
+            String valor = scanner.nextLine().trim();
+            if (!valor.isEmpty()) {
+                codigoBarrasActualizar.setValor(valor);
+            }
+
+            System.out.print("Observaciones actuales (Enter para mantener el valor actual): " + codigoBarrasActualizar.getObservaciones() + "\n O ingrese nuevas observaciones: ");
+            String observaciones = scanner.nextLine().trim();
+            if (!observaciones.isEmpty()) {
+                codigoBarrasActualizar.setObservaciones(observaciones);
+            }
+
+            System.out.println("Codigo de barras actualizado exitosamente.");
+
+        } catch (Exception e) {
+            System.err.println("Error al actualizar el codigo de barras: " + e.getMessage());
+        }
+    }
+    
+    // NUEVO
+    
+     /**
+     * Opción 9: Eliminar Codigo de barras por ID (PELIGROSO - soft delete directo).
+     *
+     * Este método NO verifica si hay productos asociados.
+     * Si hay productos con FK a este codigo, quedarán con referencia huérfana.
+     *
+     * Flujo:
+     * 1. Solicita ID del código de barras
+     * 2. Invoca CodigoBarrasService.eliminar() directamente
+     * 3. Marca codigoBarras.eliminado = TRUE
+     *
+     */
+    
+       public void eliminarCodigoBarrasPorId() {
+        try {
+            int id = validarIntPositivo("Ingrese el ID del código de barras a eliminar: ", scanner);
+
+            // Obtener código de la base de datos
+            CodigoBarras codigoEliminar = codigoBarrasService.getById(id);
+
+            if (codigoEliminar == null) {
+                System.out.println("Código de barras no encontrado con ID: " + id);
+                return;
+            }
+
+            System.out.println("\nEl código de barras a eliminar es: " + codigoEliminar.getValor());
+            System.out.print("¿Está seguro de que desea eliminar este producto? (ingrese \"s\" para Si o cualquier otro caracter para cancelar): ");
+            String confirmacion = scanner.nextLine().trim();
+            
+            if (confirmacion.equalsIgnoreCase("s")) {
+                productoService.eliminar(id);
+                System.out.println("\n✓ Código de barras eliminado exitosamente (soft delete)");
+            } else {
+                System.out.println("\nEliminación cancelada.");
+            }
+
+        } catch (NumberFormatException e) {
+            System.err.println("Error: Debe ingresar un número válido.");
+        } catch (Exception e) {
+            System.err.println("Error al eliminar Código de barras: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    
+    // METODOS SELECCION DE OPCIONES
+    
     /**
      * Método auxiliar privado: Permite al usuario seleccionar una categoría de producto.
      * 
@@ -464,25 +648,6 @@ public class MenuHandler {
         }
     }
 
-    private CodigoBarras crearCodigoBarras() {
-        int id = 0; // lo asignará la BD posteriormente
-        EnumTipo tipo = elegirTipoCodigo(); // <-- ahora sí es EnumTipo
-
-        System.out.print("Valor: ");
-        String valor = scanner.nextLine().trim();
-
-        LocalDate fechaAsignacion = LocalDate.now();
-
-        System.out.print("Observaciones (opcional): ");
-        String observaciones = scanner.nextLine().trim();
-
-        // IMPORTANTE: Guardar el valor TAL CUAL, sin convertir a null
-        // Si está vacío, guardar como cadena vacía, NO como null
-        // Esto asegura que si el usuario ingresa algo, se guarde
-        String observacionesFinal = observaciones; // NO convertir a null
-
-        return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
-    }
     
     // METODOS PARA VALIDACIONES 
     
@@ -583,4 +748,9 @@ public class MenuHandler {
         }
         return variable;
     }
+
+    static String validarEntradaString(Scanner scanner, String nombreVariable) {
+        return validarEntradaString(scanner, nombreVariable, Integer.MAX_VALUE);
+    }
+    
 }

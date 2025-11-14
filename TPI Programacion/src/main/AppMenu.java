@@ -134,9 +134,9 @@ public class AppMenu {
             case 3 -> menuHandler.actualizarProducto();
             case 4 -> menuHandler.eliminarProducto();
             case 5 -> menuHandler.asignarCodigoAProducto(); // NUEVO
-            case 6 -> menuHandler.crearCodigoBarras(); // NUEVO
+            case 6 -> menuHandler.crearCodigoBarrasIndependiente(); // NUEVO
             case 7 -> menuHandler.listarCodigoBarras(); // NUEVO
-            case 8 -> menuHandler.actualizarCodigoBarras(); // NUEVO
+            case 8 -> menuHandler.actualizarCodigoBarrasPorId(); // NUEVO
             case 9 -> menuHandler.eliminarCodigoBarrasPorId(); // NUEVO
             case 0 -> {
                 System.out.println("Saliendo...");
