@@ -38,18 +38,25 @@ public class MenuDisplay {
      */
 public static void mostrarMenuPrincipal() {
     System.out.println("");
-    System.out.println("|------------------------------------ |");
-    System.out.println("|           MENU PRINCIPAL");
-    System.out.println("|-------------------------------------|");
-    System.out.println("|  GESTION DE PRODUCTOS");
-    System.out.println("|   1.  Crear producto"); // Pedir y validar todos los campos y guardarlo en un Instancia de producto
-    System.out.println("|   2.  Listar productos"); // Submenu preguntar criterio(opciones: 1. nombre, 2. marca, 3. categoria). PEDIDO DE ORDENAR LO PIDE A LA DB DIRECTAMENTE.
-    System.out.println("|   3.  Actualizar producto"); // Método Submenu Pedir (1. ID o 2. codigo de barras). Crea un array con los datos en orden o un objeto que herede de Producto. Pide datos al usuario.
-    System.out.println("|   4.  Eliminar producto"); // Método Submenu Pedir (1. ID o 2. codigo de barras) -> manda true eliminado.
-    System.out.println("|                                      ");
-    System.out.println("|   0.  Salir");
-    System.out.println("-------------------------------------|");
-    System.out.print("Seleccione una opcion: ");
+    System.out.println("┌───────────────────────────────────┐");
+    System.out.println("│  ☰  MENÚ PRINCIPAL\t\t│");
+    System.out.println("├───────────────────────────────────┤");
+    System.out.println("│  ✅ GESTIÓN DE PRODUCTOS 📦\t│");
+    System.out.println("│   1.  ↪ Crear producto\t\t│"); // Pedir y validar todos los campos y guardarlo en un Instancia de producto
+    System.out.println("│   2.  ↪ Listar productos\t\t│"); // Submenu preguntar criterio(opciones: 1. nombre, 2. marca, 3. categoria).
+    System.out.println("│   3.  ↪ Actualizar producto\t\t│"); // Método Submenu Pedir (1. ID). 
+    System.out.println("│   4.  ↪ Eliminar producto\t\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
+    System.out.println("│   5.  ↪ Asignar codigo barras a producto\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
+    System.out.println("│                                      \t\t│");
+    System.out.println("│  ✅ GESTIÓN DE CODIGOS DE BARRAS 𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃\t│");
+    System.out.println("│   6.  ↪ Crear código de barras\t│"); // Pedir y validar todos los campos y guardarlo en un Instancia de producto
+    System.out.println("│   7.  ↪ Listar códigos de barras\t│"); // Submenu preguntar criterio(opciones: 1. nombre, 2. marca, 3. categoria). 
+    System.out.println("│   8.  ↪ Actualizar código de barras\t│"); // Método Submenu Pedir (1. ID). 
+    System.out.println("│   9.  ↪ Eliminar código de barras\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
+    System.out.println("│                                      \t\t│");
+    System.out.println("│   0.  ↩ Salir\t\t\t│");
+    System.out.println("└───────────────────────────────────┘");
+    System.out.print("Seleccione una opción: ");
 }
 
 }
