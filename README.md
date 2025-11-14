@@ -2,7 +2,7 @@
 Relación UML 1→1 Unidireccional: Producto → Código de Barras
 
 
-
+-
 
 
 
