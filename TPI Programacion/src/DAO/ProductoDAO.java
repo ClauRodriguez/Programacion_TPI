@@ -18,9 +18,22 @@ public class ProductoDAO implements GenericDAO<Producto> {
 
     @Override
     public void insertar(Producto entidad) throws Exception {
+        insertar(entidad, null);
+    }
+    
+    /**
+     * Inserta un producto usando una conexión existente (para transacciones).
+     * Si conn es null, crea una nueva conexión.
+     */
+    public void insertar(Producto entidad, Connection conn) throws Exception {
         String sql = "INSERT INTO producto (nombre, marca, categoria, precio, peso, stock, codigo_barras_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        boolean usarConexionExterna = (conn != null);
+        
+        if (!usarConexionExterna) {
+            conn = DatabaseConnection.getConnection();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             stmt.setString(1, entidad.getNombre());
             stmt.setString(2, entidad.getMarca());
@@ -48,14 +61,37 @@ public class ProductoDAO implements GenericDAO<Producto> {
                     entidad.setId(rs.getInt(1));
                 }
             }
+            
+            // Solo hacer commit si manejamos la conexión
+            if (!usarConexionExterna) {
+                conn.commit();
+            }
+        } finally {
+            // Solo cerrar si manejamos la conexión
+            if (!usarConexionExterna && conn != null) {
+                conn.close();
+            }
         }
     }
 
     @Override
     public void actualizar(Producto entidad) throws Exception {
+        actualizar(entidad, null);
+    }
+    
+    /**
+     * Actualiza un producto usando una conexión existente (para transacciones).
+     * Si conn es null, crea una nueva conexión.
+     */
+    public void actualizar(Producto entidad, Connection conn) throws Exception {
         String sql = "UPDATE producto SET nombre = ?, marca = ?, categoria = ?, precio = ?, peso = ?, stock = ?, codigo_barras_id = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        boolean usarConexionExterna = (conn != null);
+        
+        if (!usarConexionExterna) {
+            conn = DatabaseConnection.getConnection();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setString(1, entidad.getNombre());
             stmt.setString(2, entidad.getMarca());
@@ -77,16 +113,49 @@ public class ProductoDAO implements GenericDAO<Producto> {
             
             stmt.setInt(8, entidad.getId());
             stmt.executeUpdate();
+            
+            // Solo hacer commit si manejamos la conexión
+            if (!usarConexionExterna) {
+                conn.commit();
+            }
+        } finally {
+            // Solo cerrar si manejamos la conexión
+            if (!usarConexionExterna && conn != null) {
+                conn.close();
+            }
         }
     }
 
     @Override
     public void eliminar(int id) throws Exception {
+        eliminar(id, null);
+    }
+    
+    /**
+     * Elimina (soft delete) un producto usando una conexión existente (para transacciones).
+     * Si conn es null, crea una nueva conexión.
+     */
+    public void eliminar(int id, Connection conn) throws Exception {
         String sql = "UPDATE producto SET eliminado = true WHERE id = ? AND eliminado = false";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        boolean usarConexionExterna = (conn != null);
+        
+        if (!usarConexionExterna) {
+            conn = DatabaseConnection.getConnection();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
+            
+            // Solo hacer commit si manejamos la conexión
+            if (!usarConexionExterna) {
+                conn.commit();
+            }
+        } finally {
+            // Solo cerrar si manejamos la conexión
+            if (!usarConexionExterna && conn != null) {
+                conn.close();
+            }
         }
     }
 
@@ -120,14 +189,32 @@ public class ProductoDAO implements GenericDAO<Producto> {
     }
 
     public Producto getByNombre(String nombre) throws Exception {
+        return getByNombre(nombre, null);
+    }
+    
+    /**
+     * Obtiene un producto por nombre usando una conexión existente (para transacciones).
+     * Si conn es null, crea una nueva conexión.
+     */
+    public Producto getByNombre(String nombre, Connection conn) throws Exception {
         String sql = "SELECT * FROM producto WHERE nombre = ? AND eliminado = false";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        boolean usarConexionExterna = (conn != null);
+        
+        if (!usarConexionExterna) {
+            conn = DatabaseConnection.getConnection();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nombre);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRow(rs);
                 }
+            }
+        } finally {
+            // Solo cerrar si manejamos la conexión
+            if (!usarConexionExterna && conn != null) {
+                conn.close();
             }
         }
         return null;
