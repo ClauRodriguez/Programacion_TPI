@@ -1,5 +1,5 @@
 package DAO;
-
+//comentario de prueba
 import config.DatabaseConnection;
 import model.CodigoBarras;
 import model.EnumTipo;

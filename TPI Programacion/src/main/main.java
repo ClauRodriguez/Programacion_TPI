@@ -7,8 +7,11 @@ package main;
 import config.DatabaseConnection;
 
 /**
- *
- * @author hcoceres
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
  */
 
 public class main {
