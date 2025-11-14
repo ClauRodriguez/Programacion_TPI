@@ -100,7 +100,7 @@ public class AppMenu {
                     continue;
                 }
                 int opcion = Integer.parseInt(input.trim());
-                processOption(opcion);
+                procesarOpcion(opcion);
             } catch (NumberFormatException e) {
                 System.out.println("Entrada invalida. Por favor, ingrese un numero.");
                 System.out.flush();
@@ -127,12 +127,17 @@ public class AppMenu {
      * 
      * @param opcion Número de opción ingresado por el usuario
      */
-    private void processOption(int opcion) {
+    private void procesarOpcion(int opcion) {
         switch (opcion) {
             case 1 -> menuHandler.crearProducto();
             case 2 -> menuHandler.listarProductos();
             case 3 -> menuHandler.actualizarProducto();
             case 4 -> menuHandler.eliminarProducto();
+            case 5 -> menuHandler.asignarCodigoAProducto(); // NUEVO
+            case 6 -> menuHandler.crearCodigoBarras(); // NUEVO
+            case 7 -> menuHandler.listarCodigoBarras(); // NUEVO
+            case 8 -> menuHandler.actualizarCodigoBarras(); // NUEVO
+            case 9 -> menuHandler.eliminarCodigoBarrasPorId(); // NUEVO
             case 0 -> {
                 System.out.println("Saliendo...");
                 running = false;
@@ -163,4 +168,8 @@ public class AppMenu {
     private CodigoBarrasService createCodigoBarrasService() {
         return new CodigoBarrasService();
     }
+    
+    // NO DEBERÍAMOS AQUI TAMBIÉN IMPLEMENTAR ESTO:
+    // CodigoDAO codigoDAO = new CodigoDAO();
+    // ProductoDAO productoDAO = new ProductoDAO(codigoDAO);
 }
