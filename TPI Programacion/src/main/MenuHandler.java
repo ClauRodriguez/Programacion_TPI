@@ -85,21 +85,16 @@ public class MenuHandler {
      */
     public void crearProducto() {
         try {
-            // Capturar datos (sin validaciones - las hace el Service)
-            System.out.print("Nombre: ");
-            String nombre = scanner.nextLine().trim();
+            // Capturar datos con validaciones. Después se vuelven a chequear en el Service)
+            String nombre = validarEntradaString(scanner, "Nombre", 120); // Valida que el nombre no esté vacio y no tenga más de 120 caracteres
             
-            System.out.print("Marca: ");
-            String marca = scanner.nextLine().trim();
+            String marca = validarEntradaString(scanner, "Marca", 80); // Valida que el nombre no esté vacio y no tenga más de 80 caracteres
+                     
+            double precio = validarDoublePositivo("Precio", scanner); // Valida que el precio sea numero y positivo
             
-            System.out.print("Precio: ");
-            double precio = Double.parseDouble(scanner.nextLine());
+            double peso = validarDoublePositivo("Peso", scanner); // Valida que el peso sea numero y positivo
             
-            System.out.print("Peso: ");
-            double peso = Double.parseDouble(scanner.nextLine());
-            
-            System.out.print("Stock: ");
-            int stock = Integer.parseInt(scanner.nextLine());
+            int stock = validarIntPositivo("Stock", scanner); // Valida que el stock sea numero entero y positivo
 
             Producto producto = new Producto(nombre, marca, precio, peso, stock, 0);
             
@@ -109,9 +104,9 @@ public class MenuHandler {
 
             // Manejar código de barras si el usuario lo desea
             CodigoBarras codigo = null;
-            System.out.print("¿Desea agregar un codigo de barras? (s/n): ");
+            System.out.print("¿Desea agregar un codigo de barras? (ingrese \"s\" para Si o cualquier otro caracter para no): "); // Pregunta si desea agregar Codigo de Barras
             if (scanner.nextLine().equalsIgnoreCase("s")) {
-                codigo = crearCodigo();
+                codigo = crearCodigoBarras();
             }
 
             // Guardar producto (el Service valida y maneja errores)
@@ -158,9 +153,9 @@ public class MenuHandler {
             System.out.println("2. Listar por ID");
             System.out.println("3. Listar por nombre");
             System.out.println("4. Listar por categoría");
-            System.out.print("Ingrese opción: ");
+            System.out.println("0. ↩ Volver al menú anterior");
 
-            int subopcion = Integer.parseInt(scanner.nextLine());
+            int subopcion = validarIntPositivo("Ingrese opción: ", scanner);
             List<Producto> productos = new ArrayList<>();
 
             switch (subopcion) {
@@ -176,6 +171,9 @@ public class MenuHandler {
                 case 4:
                     productos = listarPorCategoria();
                     break;
+                case 0:
+                    System.out.println("\n↩ Volviendo al menu principal...");
+                    return;
                 default:
                     System.out.println("Opción inválida.");
                     return; // Salir si la opción es inválida
@@ -184,7 +182,7 @@ public class MenuHandler {
             if (productos == null || productos.isEmpty()) {
                 System.out.println("No se encontraron productos.");
             } else {
-                System.out.println("\n=== PRODUCTOS ENCONTRADOS ===\n");
+                System.out.println("\n**** PRODUCTOS ENCONTRADOS ****\n");
                 for (Producto p : productos) {
                     System.out.println(p);
                 }
@@ -231,8 +229,7 @@ public class MenuHandler {
 
     private List<Producto> listarPorNombre() {
         try {
-            System.out.print("Ingrese texto a buscar en el nombre: ");
-            String filtro = scanner.nextLine().trim();
+            String filtro = validarEntradaString(scanner, "nombre a buscar", 120);
             if (filtro.isEmpty()) {
                 System.out.println("El filtro no puede estar vacío.");
                 return new ArrayList<>();
@@ -297,8 +294,7 @@ public class MenuHandler {
      */
     public void actualizarProducto() {
         try {
-            System.out.print("\nIngrese el ID del producto a actualizar: ");
-            int id = Integer.parseInt(scanner.nextLine());
+            int id = validarIntPositivo("ID del producto a actualizar: ", scanner);
 
             // Obtener producto de la base de datos
             Producto productoActualizar = productoService.getById(id);
@@ -313,19 +309,19 @@ public class MenuHandler {
             System.out.println("-".repeat(30));
             System.out.println("Ingrese los datos nuevos (presione Enter para mantener el valor actual):");
 
-            System.out.print("Nombre actual (Enter para mantener): " + productoActualizar.getNombre() + "\nIngrese el nuevo nombre(Enter para mantener): ");
+            System.out.print("Nombre actual (Enter para mantener): " + productoActualizar.getNombre() + "\nO ingrese el nuevo nombre: ");
             String nombre = scanner.nextLine().trim();
             if (!nombre.isEmpty()) {
                 productoActualizar.setNombre(nombre);
             }
 
-            System.out.print("Marca actual: " + productoActualizar.getMarca() + "\nIngrese la nueva marca (Enter para mantener): ");
+            System.out.print("Marca actual (Enter para mantener): " + productoActualizar.getMarca() + "\n O ingrese la nueva marca: ");
             String marca = scanner.nextLine().trim();
             if (!marca.isEmpty()) {
                 productoActualizar.setMarca(marca);
             }
 
-            System.out.print("Precio actual: " + productoActualizar.getPrecio() + "\nIngrese el nuevo precio (Enter para mantener): ");
+            System.out.print("Precio actual (Enter para mantener): " + productoActualizar.getPrecio() + "\nO ingrese el nuevo precio: ");
             String precioStr = scanner.nextLine().trim();
             if (!precioStr.isEmpty()) {
                 double precio = Double.parseDouble(precioStr);
@@ -347,7 +343,7 @@ public class MenuHandler {
             }
 
             System.out.print("Categoria actual: " + productoActualizar.getCategoria() + "\n");
-            System.out.print("¿Desea cambiar la categoría? (s/n): ");
+            System.out.print("¿Desea cambiar la categoría? (ingrese \"s\" para Si o cualquier otro caracter para cancelar): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 CategoriaProducto nuevaCategoria = seleccionarCategoria();
                 productoActualizar.setCategoria(nuevaCategoria);
@@ -379,8 +375,7 @@ public class MenuHandler {
      */
     public void eliminarProducto() {
         try {
-            System.out.print("\nIngrese el ID del producto a eliminar: ");
-            int id = Integer.parseInt(scanner.nextLine());
+            int id = validarIntPositivo("Ingrese el ID del producto a eliminar: ", scanner);
 
             // Obtener producto de la base de datos
             Producto productoEliminar = productoService.getById(id);
@@ -391,7 +386,7 @@ public class MenuHandler {
             }
 
             System.out.println("\nEl producto a eliminar es: " + productoEliminar.getNombre());
-            System.out.print("¿Está seguro de que desea eliminar este producto? (s/n): ");
+            System.out.print("¿Está seguro de que desea eliminar este producto? (ingrese \"s\" para Si o cualquier otro caracter para cancelar): ");
             String confirmacion = scanner.nextLine().trim();
             
             if (confirmacion.equalsIgnoreCase("s")) {
@@ -448,42 +443,144 @@ public class MenuHandler {
      */
     
     private EnumTipo elegirTipoCodigo() {
-    EnumTipo[] tipos = EnumTipo.values();
-    System.out.println("Seleccione el tipo de Código de Barras:");
-    for (int i = 0; i < tipos.length; i++) {
-        System.out.println((i + 1) + "). " + tipos[i].name());
-    }
+        EnumTipo[] tipos = EnumTipo.values();
+        System.out.println("Seleccione el tipo de Código de Barras:");
+        for (int i = 0; i < tipos.length; i++) {
+            System.out.println((i + 1) + "). " + tipos[i].name());
+        }
 
-    while (true) {
-        System.out.print("Opción: ");
-        try {
-            int opcion = Integer.parseInt(scanner.nextLine().trim());
-            if (opcion >= 1 && opcion <= tipos.length) {
-                return tipos[opcion - 1]; // índice correcto
-            } else {
-                System.out.println("La opción debe estar entre 1 y " + tipos.length);
+        while (true) {
+            System.out.print("Opción: ");
+            try {
+                int opcion = Integer.parseInt(scanner.nextLine().trim());
+                if (opcion >= 1 && opcion <= tipos.length) {
+                    return tipos[opcion - 1]; // índice correcto
+                } else {
+                    System.out.println("La opción debe estar entre 1 y " + tipos.length);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ingrese un número válido.");
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Ingrese un número válido.");
         }
     }
-}
-private CodigoBarras crearCodigo() {
-    int id = 0; // lo asignará la BD posteriormente
-    EnumTipo tipo = elegirTipoCodigo(); // <-- ahora sí es EnumTipo
 
-    System.out.print("Valor: ");
-    String valor = scanner.nextLine().trim();
+    private CodigoBarras crearCodigoBarras() {
+        int id = 0; // lo asignará la BD posteriormente
+        EnumTipo tipo = elegirTipoCodigo(); // <-- ahora sí es EnumTipo
 
-    LocalDate fechaAsignacion = LocalDate.now();
+        System.out.print("Valor: ");
+        String valor = scanner.nextLine().trim();
 
-    System.out.print("Observaciones (opcional): ");
-    String observaciones = scanner.nextLine().trim();
+        LocalDate fechaAsignacion = LocalDate.now();
+
+        System.out.print("Observaciones (opcional): ");
+        String observaciones = scanner.nextLine().trim();
+
+        // IMPORTANTE: Guardar el valor TAL CUAL, sin convertir a null
+        // Si está vacío, guardar como cadena vacía, NO como null
+        // Esto asegura que si el usuario ingresa algo, se guarde
+        String observacionesFinal = observaciones; // NO convertir a null
+
+        return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
+    }
     
-    // IMPORTANTE: Guardar el valor TAL CUAL, sin convertir a null
-    // Si está vacío, guardar como cadena vacía, NO como null
-    // Esto asegura que si el usuario ingresa algo, se guarde
-    String observacionesFinal = observaciones; // NO convertir a null
+    // METODOS PARA VALIDACIONES 
+    
+         /**
+     * Valida y obtiene un número entero positivo desde la entrada del usuario.
+     *
+     * Este método solicita repetidamente al usuario que ingrese un valor hasta
+     * que se proporcione un número entero válido y positivo. 
+     * Maneja errores de formato y valores no positivos mostrando mensajes de error apropiados.
+     *
+     * @param mensaje El mensaje que se muestra al usuario para solicitar la entrada
+     * @param scanner El objeto Scanner utilizado para leer la entrada del usuario
+     * @return Un número entero positivo válido introducido por el usuario
+     */
+        static int validarIntPositivo(String mensaje, Scanner scanner) {
+        boolean bandera = false;
+        int num = 0;
+        do {
+            try {
+                System.out.print(mensaje);
+                num = Integer.parseInt(scanner.nextLine()); // Si se ingresa un double se transforma en int
+                if (num >= 0) {
+                    bandera = true;
+                } else {
+                    System.out.println("*ERROR. No puede ser un número negativo. ");
+                }
+            } catch (NumberFormatException nfe) { // Captura error si no se ingresa numero
+                System.out.println("Solo admite caracteres numericos.");
+            }
+        } while (!bandera);
+        return num;
+        }
+    
+     /**
+     * Valida y obtiene un número decimal positivo desde la entrada del usuario.
+     *
+     * Este método solicita repetidamente al usuario que ingrese un valor hasta
+     * que se proporcione un número decimal válido y positivo. 
+     * Maneja errores de formato y valores no positivos mostrando mensajes de error apropiados.
+     *
+     * @param mensaje El mensaje que se muestra al usuario para solicitar la entrada
+     * @param scanner El objeto Scanner utilizado para leer la entrada del usuario
+     * @return Un número decimal positivo válido introducido por el usuario
+     */
+    static double validarDoublePositivo(String mensaje, Scanner scanner) {
+        boolean bandera = false;
+        double num = 0;
+        do {
+            try {
+                System.out.print(mensaje);
+                num = Double.parseDouble(scanner.nextLine());
+                if (num >= 0) {
+                    bandera = true;
+                } else {
+                    System.out.println("*ERROR. No puede ser un número negativo. ");
+                }
+            } catch (NumberFormatException nfe) { // Captura error si no se ingresa numero
+                System.out.println("Solo admite caracteres numericos.");
+            }
+        } while (!bandera);
+        return num;
+    }
+ 
+    /**
+     * Valida y obtiene una cadena de texto desde la entrada del usuario 
+     * que cumple con criterios específicos de longitud y contenido.
+     *
+     * Este método solicita repetidamente al usuario que ingrese un valor hasta que se 
+     * proporcione una cadena no vacía y que no exceda la longitud máxima especificada. 
+     * La función elimina automáticamente espacios en blanco al inicio y final de la entrada.
+     *
+     * @param scanner El objeto Scanner utilizado para leer la entrada del usuario
+     * @param nombreVariable El nombre descriptivo del campo que se está validando (para mensajes)
+     * @param maxChar La longitud máxima permitida para la cadena (debe ser positiva)
+     * @return Una cadena de texto válida, sin espacios al inicio/final, no vacía y dentro del límite de caracteres
+     *
+     * @throws IllegalArgumentException Si maxChar es menor o igual a cero
+     */
+    static String validarEntradaString(Scanner scanner, String nombreVariable, int maxChar) {
+        if (maxChar <= 0) {
+            throw new IllegalArgumentException("El máximo de caracteres debe ser positivo.");
+        }
 
-    return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
-}}
+        String variable = "";
+        boolean entradaValida = false;
+
+        while (!entradaValida) {
+            System.out.print("Ingrese " + nombreVariable + ": ");
+            variable = scanner.nextLine().trim();
+
+            if (variable.isEmpty()) {
+                System.out.println(nombreVariable + " no puede estar vacío. Inténtelo de nuevo.");
+            } else if (variable.length() > maxChar) {
+                System.out.println(nombreVariable + " no puede tener más de " + maxChar + " caracteres. Inténtelo de nuevo.");
+            } else {
+                entradaValida = true;
+            }
+        }
+        return variable;
+    }
+}
