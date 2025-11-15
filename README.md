@@ -31,7 +31,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 
 ## 🗂️ Diagrama UML
 
-![Diagrama UML del Sistema de Gestión de Productos](https://raw.githubusercontent.com/hernanbula/Programacion_TPI/feature/menu-handler/UML/TPI_P2.png)
+![Diagrama UML del Sistema de Gestión de Productos](https://raw.githubusercontent.com/hernanbula/Programacion_TPI/blob/main/UML/TPI_P2.png)
 
 **Elementos principales del diagrama:**
 - **Relación 1→1 unidireccional**: Producto → CodigoBarras
