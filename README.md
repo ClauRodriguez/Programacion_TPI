@@ -1,23 +1,23 @@
-# 📦 Sistema de Gestión de Productos con Códigos de Barras
-
 ## 📍 **Universidad Tecnológica Nacional**  
 ### *TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN A DISTANCIA*
 
-## 💻 Programación II & Base de Datos  
-#### **Comisión:** 2024
-
+## 💻 Programación II 
+#### **Año:** 2025
+.
 ## Trabajo Final Integrador: Gestión de Productos con Relación 1→1 Unidireccional
-
+.
 ## ✨ Docentes  
 #### 👨‍🏫 Coordinador: Carlos Martinez
 #### 👩‍🏫 Profesores: Ariel Enferrel | Cinthia Rigoni | Alberto Cortez
-
+.
 ## 👥 Estudiantes  
 #### Gaston Alberto Cejas | Hernan Cóceres | Claudio Rodriguez | Hernan E. Bula
-
+.
 ---
 
-## 🏪 Descripción del Dominio
+# 📦 Sistema de Gestión de Productos con Códigos de Barras
+
+## 🏪 Descripción
 
 El sistema implementa un **sistema de gestión de inventario** para depósitos o supermercados, modelando la relación **1→1 unidireccional** entre **Producto (A)** y **CódigoBarras (B)**. 
 
