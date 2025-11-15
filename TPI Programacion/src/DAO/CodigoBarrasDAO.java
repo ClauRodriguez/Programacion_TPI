@@ -51,7 +51,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
             // Recuperar id generado automáticamente por la BD
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    entidad.setId(rs.getInt(1));
+                    entidad.setId(rs.getLong(1));
                 }
             }
             
@@ -97,7 +97,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
                 stmt.setNull(4, Types.VARCHAR);
             }
             
-            stmt.setInt(5, entidad.getId());
+            stmt.setLong(5, entidad.getId());
 
             stmt.executeUpdate();
             
@@ -114,7 +114,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
     }
 
     @Override
-    public void eliminar(int id) throws Exception {
+    public void eliminar(long id) throws Exception {
         eliminar(id, null);
     }
     
@@ -122,7 +122,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
      * Elimina (soft delete) un código de barras usando una conexión existente (para transacciones).
      * Si conn es null, crea una nueva conexión.
      */
-    public void eliminar(int id, Connection conn) throws Exception {
+    public void eliminar(long id, Connection conn) throws Exception {
         String sql = "UPDATE codigo_barras SET eliminado = true WHERE id = ? AND eliminado = false";
         boolean usarConexionExterna = (conn != null);
         
@@ -132,7 +132,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             stmt.executeUpdate();
             
             // Solo hacer commit si manejamos la conexión
@@ -146,14 +146,40 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
             }
         }
     }
+    
+    public void recuperar(long id) throws Exception {
+    recuperar(id, null);
+}
+
+public void recuperar(long id, Connection conn) throws Exception {
+    String sql = "UPDATE codigo_barras SET eliminado = false WHERE id = ? AND eliminado = true";
+    boolean usarConexionExterna = (conn != null);
+
+    if (!usarConexionExterna) {
+        conn = DatabaseConnection.getConnection();
+    }
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setLong(1, id);
+        stmt.executeUpdate();
+
+        if (!usarConexionExterna) {
+            conn.commit();
+        }
+    } finally {
+        if (!usarConexionExterna && conn != null) {
+            conn.close();
+        }
+    }
+}
 
     @Override
-    public CodigoBarras getById(int id) throws Exception {
+    public CodigoBarras getById(long id) throws Exception {
         String sql = "SELECT * FROM codigo_barras WHERE id = ? AND eliminado = false";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) return mapRow(rs);
             }
@@ -209,7 +235,7 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
      * Método auxiliar para mapear un ResultSet a un objeto CodigoBarras.
      */
     private CodigoBarras mapRow(ResultSet rs) throws SQLException {
-        int id = rs.getInt("id");
+        long id = rs.getLong("id");
         boolean eliminado = rs.getBoolean("eliminado");
 
         String tipoStr = rs.getString("tipo");

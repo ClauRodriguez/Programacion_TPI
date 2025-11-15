@@ -12,6 +12,7 @@ import config.DatabaseConnection;
 
 public class main {
     public static void main(String[] args) {
+        MenuStyle.style(args);
         System.out.println("=== SISTEMA DE GESTION DE PRODUCTOS ===");
         System.out.println("Iniciando aplicacion...\n");
         try {
