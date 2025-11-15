@@ -35,9 +35,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 
 **Elementos principales del diagrama:**
 - **Relación 1→1 unidireccional**: Producto → CodigoBarras
-- **Arquitectura en 5 capas**: config, entities, dao, service, main
-- **Patrones implementados**: DAO, Service Layer, MVC
-- **Transacciones**: Commit/rollback en capa Service
+- **Arquitectura en 5 capas**: config, model, dao, service, main
 
 ---
 
