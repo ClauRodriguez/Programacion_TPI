@@ -1,5 +1,5 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram noteslt=&lt;-
-m1=1</help_text><element><id>UMLClass</id><coordinates><x>310</x><y>150</y><w>310</w><h>160</h></coordinates><panel_attributes>Producto
+<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><help_text>Space for diagram noteslt=&lt;-
+m1=1</help_text><element><id>UMLClass</id><coordinates><x>405</x><y>126</y><w>279</w><h>144</h></coordinates><panel_attributes>Producto
 --
 - nombre: String
 - marca: String
@@ -9,24 +9,24 @@ m1=1</help_text><element><id>UMLClass</id><coordinates><x>310</x><y>150</y><w>31
 --
 + setCategoria(categoria: CategoriaProducto): void
 + setCodigoBarras(codigoBarras: CodigoBarras): void
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>700</x><y>160</y><w>230</w><h>110</h></coordinates><panel_attributes>CodigoBarras
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>756</x><y>99</y><w>207</w><h>108</h></coordinates><panel_attributes>CodigoBarras
 --
 - valor: String
 - fechaAsignacion: java.time.LocalDate
 - observaciones: String
 --
-+ setTipo(): EnumTipo</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>570</x><y>40</y><w>130</w><h>70</h></coordinates><panel_attributes>/Base/
++ setTipo(): EnumTipo</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>27</y><w>117</w><h>63</h></coordinates><panel_attributes>/Base/
 --
 -id: Long
 -eliminado: Boolean
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1010</x><y>160</y><w>70</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1026</x><y>99</y><w>63</w><h>90</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
 Tipo
 --
 _EAN13_
 _EAN8_
-_UPC_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>610</x><y>200</y><w>110</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
-m1=1</panel_attributes><additional_attributes>90;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>920</x><y>190</y><w>110</w><h>40</h></coordinates><panel_attributes>lt=&lt;..
--tipo</panel_attributes><additional_attributes>90;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>690</x><y>60</y><w>150</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;130;10;130;100</additional_attributes></element><element><id>Relation</id><coordinates><x>460</x><y>60</y><w>130</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>110;10;10;10;10;90</additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>150</y><w>160</w><h>160</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+_UPC_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>675</x><y>171</y><w>99</w><h>36</h></coordinates><panel_attributes>lt=&lt;-
+m1=1</panel_attributes><additional_attributes>90;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>954</x><y>108</y><w>90</w><h>36</h></coordinates><panel_attributes>lt=&lt;..
+-tipo</panel_attributes><additional_attributes>80;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>45</y><w>162</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;160;10;160;60</additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>45</y><w>90</w><h>99</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;10;10;10;10;90</additional_attributes></element><element><id>UMLClass</id><coordinates><x>180</x><y>144</y><w>144</w><h>144</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
 CategoriaProducto
 --
 _ALIMENTOS_
@@ -36,8 +36,8 @@ _FERRETERIA_
 _LIMPIEZA_
 --
 getDescripcion(): String
-imprimirCategorias(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>200</x><y>170</y><w>130</w><h>40</h></coordinates><panel_attributes>lt=&lt;..
--categoria</panel_attributes><additional_attributes>10;20;110;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>750</x><y>410</y><w>310</w><h>210</h></coordinates><panel_attributes>MenuHandler
+imprimirCategorias(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>315</x><y>171</y><w>108</w><h>36</h></coordinates><panel_attributes>lt=&lt;..
+-categoria</panel_attributes><additional_attributes>10;20;100;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>801</x><y>369</y><w>279</w><h>261</h></coordinates><panel_attributes>MenuHandler
 --
 - scanner: Scanner
 - productoService: ProductoService
@@ -50,15 +50,21 @@ imprimirCategorias(): void</panel_attributes><additional_attributes></additional
    + listarPorCategoria(): void
 + actualizarProducto(): void
 + eliminarProducto(): void
-+ crearCodigo(): CodigoBarras
+- crearCodigoBarras(): CodigoBarras
++ asignarCodigoAProducto(): void
++ crearCodigoBarrasIndependiente(): void
++ listarCodigoBarras(): void
++ actualizarCodigoBarrasPorId(): void
++ eliminarCodigoBarrasPorId(): void
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>0</y><w>1050</w><h>340</h></coordinates><panel_attributes>model
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>162</x><y>0</y><w>945</w><h>306</h></coordinates><panel_attributes>model
 --
-bg=yellow</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>410</y><w>100</w><h>40</h></coordinates><panel_attributes>Main
---
+bg=yellow</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>180</x><y>369</y><w>162</w><h>54</h></coordinates><panel_attributes>Main
 --
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>410</y><w>280</w><h>130</h></coordinates><panel_attributes>AppMenu
+--
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>441</x><y>369</y><w>279</w><h>135</h></coordinates><panel_attributes>AppMenu
 --
 - scanner: Scanner
 - menuHandler: MenuHandler
@@ -66,14 +72,17 @@ bg=yellow</panel_attributes><additional_attributes></additional_attributes></ele
 --
 + run(): void
 - procesarOpcion(int): void
-- crearProductoService(): ProductoServiceImpl
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>520</x><y>410</y><w>190</w><h>60</h></coordinates><panel_attributes>MenuDisplay
+- crearProductoService(): ProductoService
+- createCodigoBarrasService(): CodigoBarrasService
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>486</x><y>558</y><w>171</w><h>63</h></coordinates><panel_attributes>MenuDisplay
 --
+
 --
 + mostrarMenuPrincipal(): void
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>870</y><w>500</w><h>180</h></coordinates><panel_attributes>config
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>162</x><y>684</y><w>441</w><h>162</h></coordinates><panel_attributes>config
 --
-bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>60</x><y>700</y><w>190</w><h>130</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>657</x><y>720</y><w>171</w><h>117</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
 /GenericService&lt;T&gt;/
 --
 --
@@ -81,15 +90,18 @@ insertar(entidad: T): void
 actualizar(entidad: T): void
 eliminar(id: int): void
 getById(id: int): T
-getAll(): List&lt;T&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>290</x><y>770</y><w>230</w><h>60</h></coordinates><panel_attributes>CodigoBarrasService
+getAll(): List&lt;T&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>882</x><y>819</y><w>207</w><h>63</h></coordinates><panel_attributes>CodigoBarrasService
 --
 - codigoBarrasDAO: CodigoBarrasDAO
---</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>240</x><y>770</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>290</x><y>700</y><w>180</w><h>60</h></coordinates><panel_attributes>ProductoService
+--
++ validarCodigoBarras(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>828</y><w>180</w><h>54</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;40;180;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>864</x><y>720</y><w>189</w><h>81</h></coordinates><panel_attributes>ProductoService
 --
 - productoDAO: ProductoDAO
---</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>240</x><y>710</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>600</x><y>670</y><w>490</w><h>180</h></coordinates><panel_attributes>DAO
 --
-bg=blue</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>700</y><w>190</w><h>130</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
++ validarProducto(): void
++ insertarConCodigoBarras():void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>819</x><y>729</y><w>63</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>162</x><y>873</y><w>441</w><h>216</h></coordinates><panel_attributes>DAO
+--
+bg=blue</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>180</x><y>909</y><w>171</w><h>117</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
 /GenericDAO&lt;T&gt;/
 --
 --
@@ -97,19 +109,41 @@ insertar(entidad: T): void
 actualizar(entidad: T): void
 eliminar(id: int): void
 getById(id: int): T
-getAll(): List&lt;T&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>850</x><y>700</y><w>230</w><h>60</h></coordinates><panel_attributes>ProductoDAO
+getAll(): List&lt;T&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>387</x><y>909</y><w>153</w><h>54</h></coordinates><panel_attributes>ProductoDAO
 --
---</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>850</x><y>770</y><w>180</w><h>60</h></coordinates><panel_attributes>CodigoBarrasDAO
 --
---</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>780</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>730</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>670</y><w>500</w><h>180</h></coordinates><panel_attributes>service
++ getByNombre(): Producto</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>423</x><y>999</y><w>162</w><h>54</h></coordinates><panel_attributes>CodigoBarrasDAO
 --
-bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>60</x><y>910</y><w>280</w><h>100</h></coordinates><panel_attributes>DatabaseConnection
+--
++ getByValor(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>342</x><y>999</y><w>99</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;90;10</additional_attributes></element><element><id>Relation</id><coordinates><x>342</x><y>918</y><w>63</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>639</x><y>684</y><w>468</w><h>225</h></coordinates><panel_attributes>service
+--
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>180</x><y>720</y><w>252</w><h>108</h></coordinates><panel_attributes>DatabaseConnection
 --
 _- URL_
 _- USER_
 _- PASWORD_
 --
 + getConnection(): Connection
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>380</y><w>1050</w><h>260</h></coordinates><panel_attributes>main
++ crearBaseDatosSiNoExiste(): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>162</x><y>333</y><w>945</w><h>315</h></coordinates><panel_attributes>main
 --
-bg=orange</panel_attributes><additional_attributes></additional_attributes></element></diagram>
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>333</x><y>378</y><w>126</w><h>36</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes><additional_attributes>120;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>252</x><y>414</y><w>54</w><h>324</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;340;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>711</x><y>387</y><w>108</w><h>36</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes><additional_attributes>100;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>567</x><y>495</y><w>54</w><h>81</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>954</x><y>621</y><w>54</w><h>117</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;110;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1062</x><y>621</y><w>54</w><h>216</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;220;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>423</x><y>783</y><w>108</w><h>144</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;10;70;10;70;140</additional_attributes></element><element><id>Relation</id><coordinates><x>423</x><y>738</y><w>189</w><h>279</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;10;160;10;160;290</additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>954</y><w>54</w><h>63</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>531</x><y>792</y><w>360</w><h>162</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;160;380;160;380;10</additional_attributes></element><element><id>Relation</id><coordinates><x>108</x><y>126</y><w>315</w><h>954</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>330;10;10;10;10;1040;320;1040;320;930</additional_attributes></element><element><id>Relation</id><coordinates><x>63</x><y>108</y><w>711</w><h>954</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>770;10;10;10;10;1040;400;1040</additional_attributes></element><element><id>UMLDeployment</id><coordinates><x>882</x><y>1008</y><w>225</w><h>81</h></coordinates><panel_attributes>&lt;&lt;Data Base&gt;&gt;
+DB (depositotpi)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>576</x><y>873</y><w>342</w><h>153</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>10;150;130;150;130;90;360;90;360;10</additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>765</y><w>810</w><h>369</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes><additional_attributes>880;330;630;330;630;390;10;390;10;10;100;10</additional_attributes></element><element><id>Relation</id><coordinates><x>576</x><y>1017</y><w>324</w><h>36</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>340;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>495</x><y>954</y><w>504</w><h>72</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;call&gt;&gt;</panel_attributes><additional_attributes>540;60;540;30;10;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>675</x><y>225</y><w>531</w><h>549</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes><additional_attributes>10;10;520;10;520;590;420;590</additional_attributes></element><element><id>Relation</id><coordinates><x>954</x><y>189</y><w>306</w><h>693</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes><additional_attributes>10;10;270;10;270;750;150;750</additional_attributes></element></diagram>
