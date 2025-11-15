@@ -1,0 +1,115 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram noteslt=&lt;-
+m1=1</help_text><element><id>UMLClass</id><coordinates><x>310</x><y>150</y><w>310</w><h>160</h></coordinates><panel_attributes>Producto
+--
+- nombre: String
+- marca: String
+- precio: double
+- peso: double
+- stock: int
+--
++ setCategoria(categoria: CategoriaProducto): void
++ setCodigoBarras(codigoBarras: CodigoBarras): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>700</x><y>160</y><w>230</w><h>110</h></coordinates><panel_attributes>CodigoBarras
+--
+- valor: String
+- fechaAsignacion: java.time.LocalDate
+- observaciones: String
+--
++ setTipo(): EnumTipo</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>570</x><y>40</y><w>130</w><h>70</h></coordinates><panel_attributes>/Base/
+--
+-id: Long
+-eliminado: Boolean
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1010</x><y>160</y><w>70</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+Tipo
+--
+_EAN13_
+_EAN8_
+_UPC_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>610</x><y>200</y><w>110</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+m1=1</panel_attributes><additional_attributes>90;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>920</x><y>190</y><w>110</w><h>40</h></coordinates><panel_attributes>lt=&lt;..
+-tipo</panel_attributes><additional_attributes>90;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>690</x><y>60</y><w>150</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;130;10;130;100</additional_attributes></element><element><id>Relation</id><coordinates><x>460</x><y>60</y><w>130</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>110;10;10;10;10;90</additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>150</y><w>160</w><h>160</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+CategoriaProducto
+--
+_ALIMENTOS_
+_BEBIDAS_
+_ELECTRODOMESTICOS_
+_FERRETERIA_
+_LIMPIEZA_
+--
+getDescripcion(): String
+imprimirCategorias(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>200</x><y>170</y><w>130</w><h>40</h></coordinates><panel_attributes>lt=&lt;..
+-categoria</panel_attributes><additional_attributes>10;20;110;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>750</x><y>410</y><w>310</w><h>210</h></coordinates><panel_attributes>MenuHandler
+--
+- scanner: Scanner
+- productoService: ProductoService
+--
++ crearProducto(): void
++ listarProductos(): void
+   + listarTodosProductos(): void
+   + listarPorId(): void
+   + listarPorNombre(): void
+   + listarPorCategoria(): void
++ actualizarProducto(): void
++ eliminarProducto(): void
++ crearCodigo(): CodigoBarras
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>0</y><w>1050</w><h>340</h></coordinates><panel_attributes>model
+--
+bg=yellow</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>410</y><w>100</w><h>40</h></coordinates><panel_attributes>Main
+--
+--
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>410</y><w>280</w><h>130</h></coordinates><panel_attributes>AppMenu
+--
+- scanner: Scanner
+- menuHandler: MenuHandler
+- running: boolean
+--
++ run(): void
+- procesarOpcion(int): void
+- crearProductoService(): ProductoServiceImpl
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>520</x><y>410</y><w>190</w><h>60</h></coordinates><panel_attributes>MenuDisplay
+--
+--
++ mostrarMenuPrincipal(): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>870</y><w>500</w><h>180</h></coordinates><panel_attributes>config
+--
+bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>60</x><y>700</y><w>190</w><h>130</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+/GenericService&lt;T&gt;/
+--
+--
+insertar(entidad: T): void
+actualizar(entidad: T): void
+eliminar(id: int): void
+getById(id: int): T
+getAll(): List&lt;T&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>290</x><y>770</y><w>230</w><h>60</h></coordinates><panel_attributes>CodigoBarrasService
+--
+- codigoBarrasDAO: CodigoBarrasDAO
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>240</x><y>770</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>290</x><y>700</y><w>180</w><h>60</h></coordinates><panel_attributes>ProductoService
+--
+- productoDAO: ProductoDAO
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>240</x><y>710</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>600</x><y>670</y><w>490</w><h>180</h></coordinates><panel_attributes>DAO
+--
+bg=blue</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>700</y><w>190</w><h>130</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+/GenericDAO&lt;T&gt;/
+--
+--
+insertar(entidad: T): void
+actualizar(entidad: T): void
+eliminar(id: int): void
+getById(id: int): T
+getAll(): List&lt;T&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>850</x><y>700</y><w>230</w><h>60</h></coordinates><panel_attributes>ProductoDAO
+--
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>850</x><y>770</y><w>180</w><h>60</h></coordinates><panel_attributes>CodigoBarrasDAO
+--
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>780</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>730</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>670</y><w>500</w><h>180</h></coordinates><panel_attributes>service
+--
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>60</x><y>910</y><w>280</w><h>100</h></coordinates><panel_attributes>DatabaseConnection
+--
+_- URL_
+_- USER_
+_- PASWORD_
+--
++ getConnection(): Connection
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>40</x><y>380</y><w>1050</w><h>260</h></coordinates><panel_attributes>main
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element></diagram>
