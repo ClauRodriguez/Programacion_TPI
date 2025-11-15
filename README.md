@@ -1,20 +1,18 @@
-## 📍 **Universidad Tecnológica Nacional**  
+### 📍 **Universidad Tecnológica Nacional**  
 ### *TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN A DISTANCIA*
 
 ## 💻 Programación II 
 #### **Año:** 2025
-.
-## Trabajo Final Integrador: Gestión de Productos con Relación 1→1 Unidireccional
 .
 ## ✨ Docentes  
 #### 👨‍🏫 Coordinador: Carlos Martinez
 #### 👩‍🏫 Profesores: Ariel Enferrel | Cinthia Rigoni | Alberto Cortez
 .
 ## 👥 Estudiantes  
-#### Gaston Alberto Cejas | Hernan Cóceres | Claudio Rodriguez | Hernan E. Bula
-.
+#### Hernan Cóceres | Claudio Rodriguez | Hernan E. Bula | Gaston A. Cejas 
 ---
-
+## Trabajo Final Integrador
+---
 # 📦 Sistema de Gestión de Productos con Códigos de Barras
 
 ## 🏪 Descripción
@@ -48,7 +46,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 📹 **Enlace al video de demostración:**  
 [INSERTAR_ENLACE_AL_VIDEO_AQUÍ]
 
-**Contenido del video (10-15 minutos):**
+**Contenido del video (15 minutos):**
 - ✅ Presentación de los 4 integrantes
 - ✅ Demostración del flujo CRUD completo
 - ✅ Explicación de la relación 1→1 funcionando
@@ -111,11 +109,11 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 
 ## ⚙️ Requisitos del Sistema
 
-### Software Requerido
+### Software Utilizado
 - **Java JDK 21** o superior
-- **MySQL 8.0+** o **MariaDB 10.4+** (puerto 3307)
+- **MySQL 8.0+** o **MariaDB 10.4+**
 - **MySQL Connector/J** 8.0+
-- **IDE**: NetBeans, IntelliJ IDEA o Eclipse
+- **IDE**: NetBeans
 
 ### Configuración de Base de Datos
 
@@ -179,7 +177,7 @@ public class DatabaseConnection {
 ### Pasos para Ejecutar:
 
 1. **Clonar el repositorio** y abrir en el IDE
-2. **Configurar MySQL** en puerto 3307
+2. **Configurar MySQL**
 3. **Agregar dependencias**:
    - MySQL Connector/J al classpath
 4. **Compilar el proyecto**
@@ -187,7 +185,7 @@ public class DatabaseConnection {
 
 ### Credenciales de Prueba:
 - **Host:** localhost
-- **Puerto:** 3307
+- **Puerto:** 3306
 - **Usuario:** root
 - **Contraseña:** [vacía]
 - **Base de datos:** depositotpi (se crea automáticamente)
@@ -344,8 +342,9 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 | **Validaciones de negocio** | ✅ | En capa Service |
 | **CRUD completo** | ✅ | 9 operaciones implementadas |
 | **Scripts SQL** | ✅ | Incluidos y probados |
-| **Diagrama UML** | ✅ | Incluido en documentación |
 | **Documentación README** | ✅ | Completa y detallada |
+| **Diagrama UML** | ✅ | Incluido en documentación |
+| **Video Explicativo** | ✅ | Integrantes del grupo explicando el trabajo |
 
 ---
 
