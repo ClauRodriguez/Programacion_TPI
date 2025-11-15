@@ -28,7 +28,7 @@ public class Producto extends Base {
 
 // CONSTRUCTORES 
     
-    public Producto(String nombre, String marca, double precio, double peso, int stock, int id) {
+    public Producto(String nombre, String marca, double precio, double peso, int stock, long id) {
         super(id, false);
         this.nombre = nombre;
         this.marca = marca;

@@ -19,7 +19,7 @@ public class CodigoBarras extends Base {
     private LocalDate fechaAsignacion;
     private String observaciones;
 
-    public CodigoBarras(int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
+    public CodigoBarras(long id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
         super(id, eliminado);
         this.tipo = tipo;
         this.valor = valor;

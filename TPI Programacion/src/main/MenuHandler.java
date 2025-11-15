@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import model.Producto;
-import java.util.Scanner; // HAY QUE RESOLVER QUE ESTÉ SOLO EN UN LUGAR
+import java.util.Scanner;
 import model.CategoriaProducto;
 import model.CodigoBarras;
 import model.EnumTipo;
@@ -408,16 +408,77 @@ public class MenuHandler {
     }
 
     
-    // NUEVO FALTA HACER
-    /**
-     * Opción 5: Asignar Codigo a Producto. // FALTA HACER
-     *
-     */
-    public void asignarCodigoAProducto() {
+   
+public void asignarCodigoDeBarras() {
+    try {
+        int idProducto = validarIntPositivo("ID del producto al que se le asignará un código de barras: ", scanner);
 
+        // Obtener producto de la base de datos
+        Producto productoActualizar = productoService.getById(idProducto);
+
+        if (productoActualizar == null) {
+            System.out.println("Producto no encontrado con ID: " + idProducto);
+            return;
+        }
+
+        System.out.println("\nEl producto a modificar es: " + productoActualizar.getNombre()
+                + " - ID: " + productoActualizar.getId());
+        System.out.println("-".repeat(30));
+
+        int idCodigo = validarIntPositivo("ID del código de barras a asignar: ", scanner);
+
+        CodigoBarras codigoParaAsignar = codigoBarrasService.getById(idCodigo);
+        if (codigoParaAsignar == null) {
+            System.out.println("Código de barras no encontrado con ID: " + idCodigo);
+            return;
+        }
+
+        productoActualizar.setCodigoBarras(codigoParaAsignar);
+
+        try {
+            productoService.asignarCodigoDeBarras(productoActualizar);
+            System.out.println("\n✓ Código de barras asignado exitosamente");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error de validación: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al asignar el código: " + e.getMessage());
+        }
+
+    } catch (NumberFormatException e) {
+        System.err.println("Error: Debe ingresar un número válido.");
+    } catch (Exception e) {
+        System.err.println("Error al actualizar producto: " + e.getMessage());
     }
-    
-    
+}
+
+public void recuperarProducto() {
+    try {
+        int id = validarIntPositivo("Ingrese el ID del producto a recuperar: ", scanner);
+
+        System.out.print("¿Está seguro de que desea recuperar este producto? (ingrese \"s\" para Si o cualquier otro caracter para cancelar): ");
+        String confirmacion = scanner.nextLine().trim();
+
+        if (confirmacion.equalsIgnoreCase("s")) {
+            try {
+                productoService.recuperar(id);
+                System.out.println("\n✓ Producto recuperado exitosamente (soft undelete)");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Error al recuperar producto: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("\nRecuperación cancelada.");
+        }
+
+    } catch (NumberFormatException e) {
+        System.err.println("Error: Debe ingresar un número válido.");
+    } catch (Exception e) {
+        System.err.println("Error al recuperar producto: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
     // METODOS CODIGO DE BARRAS
     
     
@@ -451,14 +512,17 @@ public class MenuHandler {
      *
      * USO: Pre-cargar codigos en la BD
      */
-    public void crearCodigoBarrasIndependiente() {
-        try {
-            CodigoBarras codigoBarras = crearCodigoBarras();
-            System.out.println("**** Creado exitosamente ****\nCodigo de Barra: \n - ID: " + codigoBarras.getId() + "\n - Valor: " + codigoBarras.getValor() + "\n - Tipo: " + codigoBarras.getTipo());
-        } catch (Exception e) {
-            System.err.println("Error al crear el Codigo de barras: " + e.getMessage());
-        }
+public void crearCodigoBarrasIndependiente() {
+    try {
+        CodigoBarras codigoBarras = crearCodigoBarras();
+        codigoBarrasService.insertar(codigoBarras);
+        System.out.println("**** Creado exitosamente ****\nCodigo de Barra: \n - ID: " 
+                + codigoBarras.getId() + "\n - Valor: " + codigoBarras.getValor() 
+                + "\n - Tipo: " + codigoBarras.getTipo());
+    } catch (Exception e) {
+        System.err.println("Error al crear el Codigo de barras: " + e.getMessage());
     }
+}
     
     //NUEVO 
     /**
@@ -471,23 +535,82 @@ public class MenuHandler {
      * - Consultar ID de codigo para actualizar o eliminar
      * - Solo muestra codigos con eliminado=FALSE (soft delete).
      */
-    public void listarCodigoBarras() {
-        System.out.println("\nBuscando todos los códogos de barra...");
-        try {
-            List<CodigoBarras> codigos = codigoBarrasService.getAll();
-            if (codigos.isEmpty()) {
-                System.out.println("No se encontraron codigos de barras.");
+    
+    public void listarCodigos() {
+    try {
+        System.out.println("\n**** LISTAR CODIGOS DE BARRA ****");
+        System.out.println("1. Listar todos los codigos");
+        System.out.println("2. Listar por ID");
+        System.out.println("0. ↩ Volver al menú anterior");
+
+        int subopcion = validarIntPositivo("Ingrese opción: ", scanner);
+        List<CodigoBarras> codigoBarras = new ArrayList<>();
+
+        switch (subopcion) {
+            case 1:
+                codigoBarras = listarCodigoBarras();
+                break;
+            case 2:
+                codigoBarras = listarPorIdCodigo();
+                break;
+            case 0:
+                System.out.println("\n↩ Volviendo al menu principal...");
                 return;
-            }
-            for (CodigoBarras codigo : codigos) {
-                System.out.println("Codigo de Barra: \n - ID: " + codigo.getId() + "\n - Valor: " + codigo.getValor() + "\n - Tipo: " + codigo.getTipo());
-            }
-        } catch (Exception e) {
-            System.err.println("Error al listar códogos de barra: " + e.getMessage());
+            default:
+                System.out.println("Opción inválida.");
+                return; // Salir si la opción es inválida
         }
+
+        if (codigoBarras == null || codigoBarras.isEmpty()) {
+            System.out.println("No se encontraron productos.");
+        } else {
+            System.out.println("\n**** PRODUCTOS ENCONTRADOS ****\n");
+            for (CodigoBarras p : codigoBarras) {
+                System.out.println(p);
+            }
+            System.out.println("\nTotal: " + codigoBarras.size() + " producto(s)");
+        }
+
+    } catch (NumberFormatException e) {
+        System.err.println("Error: Debe ingresar un número válido.");
+    } catch (Exception e) {
+        System.err.println("Error al listar productos: " + e.getMessage());
+        e.printStackTrace();
     }
-    
-    
+}
+
+private List<CodigoBarras> listarCodigoBarras() {
+    System.out.println("\nBuscando todos los códogos de barra...");
+    List<CodigoBarras> codigos = new ArrayList<>();
+    try {
+        List<CodigoBarras> desdeService = codigoBarrasService.getAll();
+        if (desdeService != null) {
+            codigos.addAll(desdeService);
+        }
+    } catch (Exception e) {
+        System.err.println("Error al listar códogos de barra: " + e.getMessage());
+    }
+    return codigos;
+}
+
+private List<CodigoBarras> listarPorIdCodigo() {
+    try {
+        System.out.print("Ingrese el ID a buscar: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        CodigoBarras codigo = codigoBarrasService.getById(id);
+        List<CodigoBarras> resultado = new ArrayList<>();
+        if (codigo != null) {
+            resultado.add(codigo);
+        }
+        return resultado;
+    } catch (NumberFormatException e) {
+        System.err.println("Error: Debe ingresar un número válido.");
+        return new ArrayList<>();
+    } catch (Exception e) {
+        System.err.println("Error al buscar producto por ID: " + e.getMessage());
+        return new ArrayList<>();
+    }
+}
     // NUEVO
      /**
      * Opción 8: Actualizar Código de Barras por ID.
@@ -499,45 +622,52 @@ public class MenuHandler {
      *    - Observaciones (Opcional - Enter para mantener actual)
      * 4. Invoca CodigoBarrasService.actualizar()
      */
-    public void actualizarCodigoBarrasPorId() {
+   public void actualizarCodigoBarrasPorId() {
+    try {
+        int id = validarIntPositivo("ID del codigo de barras a actualizar: ", scanner); // REVISAR QUE ID DEBE SER Long
+
+        // Obtener codigo de la base de datos
+        CodigoBarras codigoBarrasActualizar = codigoBarrasService.getById(id);
+
+        if (codigoBarrasActualizar == null) {
+            System.out.println("Codigo de Barras no encontrado con ID: " + id);
+            return;
+        }
+
+        System.out.println("\nEl Codigo de Barras a modificar es: " + codigoBarrasActualizar.getValor()
+                + " - ID: " + codigoBarrasActualizar.getId());
+        System.out.println("-".repeat(30));
+        System.out.println("Ingrese los datos nuevos:");
+
+        codigoBarrasActualizar.setTipo(elegirTipoCodigo());
+
+        codigoBarrasActualizar.setFechaAsignacion(LocalDate.now());
+
+        System.out.print("Valor actual (Enter para mantener el valor actual): " + codigoBarrasActualizar.getValor() + "\nO ingrese el nuevo valor: ");
+        String valor = scanner.nextLine().trim();
+        if (!valor.isEmpty()) {
+            codigoBarrasActualizar.setValor(valor);
+        }
+
+        System.out.print("Observaciones actuales (Enter para mantener el valor actual): " + codigoBarrasActualizar.getObservaciones() + "\n O ingrese nuevas observaciones: ");
+        String observaciones = scanner.nextLine().trim();
+        if (!observaciones.isEmpty()) {
+            codigoBarrasActualizar.setObservaciones(observaciones);
+        }
+
         try {
-            int id = validarIntPositivo("ID del codigo de barras a actualizar: ", scanner); // REVISAR QUE ID DEBE SER Long
-
-            // Obtener codigo de la base de datos
-            CodigoBarras codigoBarrasActualizar = codigoBarrasService.getById(id);
-
-            if (codigoBarrasActualizar == null) {
-                System.out.println("Codigo de Barras no encontrado con ID: " + id);
-                return;
-            }
-
-            System.out.println("\nEl Codigo de Barras a modificar es: " + codigoBarrasActualizar.getValor()
-                    + " - ID: " + codigoBarrasActualizar.getId());
-            System.out.println("-".repeat(30));
-            System.out.println("Ingrese los datos nuevos:");
-
-            codigoBarrasActualizar.setTipo(elegirTipoCodigo());
-            
-            codigoBarrasActualizar.setFechaAsignacion(LocalDate.now());
-
-            System.out.print("Valor actual (Enter para mantener el valor actual): " + codigoBarrasActualizar.getValor() + "\nO ingrese el nuevo valor: ");
-            String valor = scanner.nextLine().trim();
-            if (!valor.isEmpty()) {
-                codigoBarrasActualizar.setValor(valor);
-            }
-
-            System.out.print("Observaciones actuales (Enter para mantener el valor actual): " + codigoBarrasActualizar.getObservaciones() + "\n O ingrese nuevas observaciones: ");
-            String observaciones = scanner.nextLine().trim();
-            if (!observaciones.isEmpty()) {
-                codigoBarrasActualizar.setObservaciones(observaciones);
-            }
-
+            codigoBarrasService.actualizar(codigoBarrasActualizar);
             System.out.println("Codigo de barras actualizado exitosamente.");
-
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error de validación: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error al actualizar el codigo de barras: " + e.getMessage());
         }
+
+    } catch (Exception e) {
+        System.err.println("Error al actualizar el codigo de barras: " + e.getMessage());
     }
+}
     
     // NUEVO
     
@@ -571,7 +701,7 @@ public class MenuHandler {
             String confirmacion = scanner.nextLine().trim();
             
             if (confirmacion.equalsIgnoreCase("s")) {
-                productoService.eliminar(id);
+                codigoBarrasService.eliminar(id);
                 System.out.println("\n✓ Código de barras eliminado exitosamente (soft delete)");
             } else {
                 System.out.println("\nEliminación cancelada.");
@@ -584,8 +714,35 @@ public class MenuHandler {
             e.printStackTrace();
         }
     }
+       
+ public void recuperarCodigoBarrasPorId() {
+    try {
+        int id = validarIntPositivo("Ingrese el ID del código de barras a recuperar: ", scanner);
 
-    
+        System.out.print("¿Confirma que desea recuperar este código de barras? (ingrese \"s\" para Si o cualquier otro caracter para cancelar): ");
+        String confirmacion = scanner.nextLine().trim();
+
+        if (confirmacion.equalsIgnoreCase("s")) {
+            try {
+                codigoBarrasService.recuperar(id);
+                System.out.println("\n✓ Código de barras recuperado exitosamente");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Error al recuperar código de barras: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("\nRecuperación cancelada.");
+        }
+
+    } catch (NumberFormatException e) {
+        System.err.println("Error: Debe ingresar un número válido.");
+    } catch (Exception e) {
+        System.err.println("Error al recuperar código de barras: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
     // METODOS SELECCION DE OPCIONES
     
     /**
@@ -752,5 +909,4 @@ public class MenuHandler {
     static String validarEntradaString(Scanner scanner, String nombreVariable) {
         return validarEntradaString(scanner, nombreVariable, Integer.MAX_VALUE);
     }
-    
 }

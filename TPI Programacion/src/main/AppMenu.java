@@ -78,11 +78,6 @@ public class AppMenu {
      * Punto de entrada de la aplicación Java.
      * Crea instancia de AppMenu y ejecuta el menú principal.
      */
-    public static void main(String[] args) {
-        AppMenu app = new AppMenu();
-        app.run();
-    }
-
     /**
      * Loop principal del menú.
      * Manejo de errores:
@@ -127,25 +122,26 @@ public class AppMenu {
      * 
      * @param opcion Número de opción ingresado por el usuario
      */
-    private void procesarOpcion(int opcion) {
-        switch (opcion) {
-            case 1 -> menuHandler.crearProducto();
-            case 2 -> menuHandler.listarProductos();
-            case 3 -> menuHandler.actualizarProducto();
-            case 4 -> menuHandler.eliminarProducto();
-            case 5 -> menuHandler.asignarCodigoAProducto(); // NUEVO
-            case 6 -> menuHandler.crearCodigoBarrasIndependiente(); // NUEVO
-            case 7 -> menuHandler.listarCodigoBarras(); // NUEVO
-            case 8 -> menuHandler.actualizarCodigoBarrasPorId(); // NUEVO
-            case 9 -> menuHandler.eliminarCodigoBarrasPorId(); // NUEVO
-            case 0 -> {
-                System.out.println("Saliendo...");
-                running = false;
-            }
-            default -> System.out.println("Opcion no valida.");
+private void procesarOpcion(int opcion) {
+    switch (opcion) {
+        case 1 -> menuHandler.crearProducto();
+        case 2 -> menuHandler.listarProductos();
+        case 3 -> menuHandler.actualizarProducto();
+        case 4 -> menuHandler.eliminarProducto();
+        case 5 -> menuHandler.asignarCodigoDeBarras();  
+        case 6 -> menuHandler.crearCodigoBarrasIndependiente();
+        case 7 -> menuHandler.listarCodigos();   
+        case 8 -> menuHandler.actualizarCodigoBarrasPorId(); 
+        case 9 -> menuHandler.eliminarCodigoBarrasPorId();  
+        case 10 -> menuHandler.recuperarProducto(); 
+        case 11 -> menuHandler.recuperarCodigoBarrasPorId(); 
+        case 0 -> {
+            System.out.println("Saliendo...");
+            running = false;
         }
+        default -> System.out.println("Opcion no valida.");
     }
-
+}
     
     /**
      * Crea e inicializa el servicio de productos.

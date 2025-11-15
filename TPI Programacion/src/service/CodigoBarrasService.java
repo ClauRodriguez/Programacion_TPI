@@ -129,7 +129,7 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
     }
 
     @Override
-    public void eliminar(int id) throws Exception {
+    public void eliminar(long id) throws Exception {
         Connection conn = null;
         try {
             conn = DatabaseConnection.getConnection();
@@ -158,9 +158,44 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
             }
         }
     }
+    
+   public void recuperar(long id) throws Exception {
+    CodigoBarras codigoActivo = codigoBarrasDAO.getById(id);
+    if (codigoActivo != null) {
+        // Existe y no esta borrado
+        throw new IllegalArgumentException("El código de barras con ID " + id + " no está borrado.");
+    }
 
+    Connection conn = null;
+    try {
+        conn = DatabaseConnection.getConnection();
+        conn.setAutoCommit(false);
+
+        codigoBarrasDAO.recuperar(id, conn);
+
+        conn.commit();
+    } catch (Exception e) {
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                throw new Exception("Error al hacer rollback: " + rollbackEx.getMessage(), e);
+            }
+        }
+        throw e;
+    } finally {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException closeEx) {
+                System.err.println("Error al cerrar conexión: " + closeEx.getMessage());
+            }
+        }
+    }
+}
     @Override
-    public CodigoBarras getById(int id) throws Exception {
+    public CodigoBarras getById(long id) throws Exception {
         return codigoBarrasDAO.getById(id);
     }
 

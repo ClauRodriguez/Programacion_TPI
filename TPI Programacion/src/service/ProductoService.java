@@ -83,6 +83,38 @@ public class ProductoService implements GenericService<Producto> {
         }
     }
     
+    public void asignarCodigoDeBarras(Producto entidad) throws Exception {
+        validarProducto(entidad);
+        
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);  // Desactivar auto-commit para manejar transacción
+            
+            productoDAO.asignarCodigoDeBarras(entidad, conn);  // Pasar conexión al DAO
+            
+            conn.commit();  // Commit si todo sale bien
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();  // Rollback en caso de error
+                } catch (SQLException rollbackEx) {
+                    throw new Exception("Error al hacer rollback: " + rollbackEx.getMessage(), e);
+                }
+            }
+            throw e;  // Re-lanzar excepción original
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);  // Restaurar auto-commit
+                    conn.close();
+                } catch (SQLException closeEx) {
+                    System.err.println("Error al cerrar conexión: " + closeEx.getMessage());
+                }
+            }
+        }
+    }
+    
     /**
      * Valida todas las reglas de negocio para un Producto.
      * @param producto Producto a validar
@@ -125,7 +157,7 @@ public class ProductoService implements GenericService<Producto> {
     }
 
     @Override
-    public void eliminar(int id) throws Exception {
+    public void eliminar(long id) throws Exception {
         Connection conn = null;
         try {
             conn = DatabaseConnection.getConnection();
@@ -154,9 +186,44 @@ public class ProductoService implements GenericService<Producto> {
             }
         }
     }
+    
+public void recuperar(long id) throws Exception {
+    Producto productoActivo = productoDAO.getById(id);
+    if (productoActivo != null) {
+        // Existe y no esta borrado
+        throw new IllegalArgumentException("El producto con ID " + id + " no está borrado.");
+    }
 
+    Connection conn = null;
+    try {
+        conn = DatabaseConnection.getConnection();
+        conn.setAutoCommit(false);
+
+        productoDAO.recuperar(id, conn);
+
+        conn.commit();
+    } catch (Exception e) {
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                throw new Exception("Error al hacer rollback: " + rollbackEx.getMessage(), e);
+            }
+        }
+        throw e;
+    } finally {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException closeEx) {
+                System.err.println("Error al cerrar conexión: " + closeEx.getMessage());
+            }
+        }
+    }
+}
     @Override
-    public Producto getById(int id) throws Exception {
+    public Producto getById(long id) throws Exception {
         return productoDAO.getById(id);
     }
 

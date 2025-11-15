@@ -18,7 +18,7 @@ public abstract class Base {
 
 // ATRIBUTOS
 
-    private int id; // Identificador único de la entidad. Generado automáticamente por la base de datos (AUTO_INCREMENT).
+    private long id; // Identificador único de la entidad. Generado automáticamente por la base de datos (AUTO_INCREMENT).
     
     private boolean eliminado; // Bandera de eliminación lógica. Mantiene integridad referencial y datos históricos
     // -> true: eliminada (no se mostrará en consultas)
@@ -32,7 +32,7 @@ public abstract class Base {
         // Inicializa sin ID: debe ser asignada por DB.
     }
     
-    protected Base(int id, boolean eliminado) {
+    protected Base(long id, boolean eliminado) {
         this.id = id;
         this.eliminado = eliminado;
     }
@@ -41,7 +41,7 @@ public abstract class Base {
      * Obtiene el ID de la entidad.
      * @return ID de la entidad, 0 si aún no ha sido persistida
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -51,7 +51,7 @@ public abstract class Base {
      *
      * @param id Nuevo ID de la entidad
      */
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

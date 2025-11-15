@@ -48,9 +48,9 @@ public class ProductoDAO implements GenericDAO<Producto> {
             
             // Guardar ID del código de barras si existe
             if (entidad.getCodigoBarras() != null && entidad.getCodigoBarras().getId() > 0) {
-                stmt.setInt(7, entidad.getCodigoBarras().getId());
+                stmt.setLong(7, entidad.getCodigoBarras().getId());
             } else {
-                stmt.setNull(7, Types.INTEGER);
+                stmt.setNull(7, Types.BIGINT);
             }
             
             stmt.executeUpdate();
@@ -58,7 +58,7 @@ public class ProductoDAO implements GenericDAO<Producto> {
             // Recuperar ID generado automáticamente por la BD
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    entidad.setId(rs.getInt(1));
+                    entidad.setId(rs.getLong(1));
                 }
             }
             
@@ -106,12 +106,44 @@ public class ProductoDAO implements GenericDAO<Producto> {
             
             // Actualizar ID del código de barras si existe
             if (entidad.getCodigoBarras() != null && entidad.getCodigoBarras().getId() > 0) {
-                stmt.setInt(7, entidad.getCodigoBarras().getId());
+                stmt.setLong(7, entidad.getCodigoBarras().getId());
             } else {
-                stmt.setNull(7, Types.INTEGER);
+                stmt.setNull(7, Types.BIGINT);
             }
             
-            stmt.setInt(8, entidad.getId());
+            stmt.setLong(8, entidad.getId());
+            stmt.executeUpdate();
+            
+            // Solo hacer commit si manejamos la conexión
+            if (!usarConexionExterna) {
+                conn.commit();
+            }
+        } finally {
+            // Solo cerrar si manejamos la conexión
+            if (!usarConexionExterna && conn != null) {
+                conn.close();
+            }
+        }
+    }
+    
+     public void asignarCodigoDeBarras(Producto entidad, Connection conn) throws Exception {
+        String sql = "UPDATE producto SET  codigo_barras_id = ? WHERE id = ?";
+        boolean usarConexionExterna = (conn != null);
+        
+        if (!usarConexionExterna) {
+            conn = DatabaseConnection.getConnection();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            // Actualizar ID del código de barras si existe
+            if (entidad.getCodigoBarras() != null && entidad.getCodigoBarras().getId() > 0) {
+                stmt.setLong(1, entidad.getCodigoBarras().getId());
+            } else {
+                stmt.setNull(1, Types.BIGINT);
+            }
+            
+            stmt.setLong(2, entidad.getId());
             stmt.executeUpdate();
             
             // Solo hacer commit si manejamos la conexión
@@ -127,7 +159,7 @@ public class ProductoDAO implements GenericDAO<Producto> {
     }
 
     @Override
-    public void eliminar(int id) throws Exception {
+    public void eliminar(long id) throws Exception {
         eliminar(id, null);
     }
     
@@ -135,7 +167,7 @@ public class ProductoDAO implements GenericDAO<Producto> {
      * Elimina (soft delete) un producto usando una conexión existente (para transacciones).
      * Si conn es null, crea una nueva conexión.
      */
-    public void eliminar(int id, Connection conn) throws Exception {
+    public void eliminar(long id, Connection conn) throws Exception {
         String sql = "UPDATE producto SET eliminado = true WHERE id = ? AND eliminado = false";
         boolean usarConexionExterna = (conn != null);
         
@@ -144,7 +176,7 @@ public class ProductoDAO implements GenericDAO<Producto> {
         }
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             stmt.executeUpdate();
             
             // Solo hacer commit si manejamos la conexión
@@ -158,13 +190,39 @@ public class ProductoDAO implements GenericDAO<Producto> {
             }
         }
     }
+    
+    public void recuperar(long id) throws Exception {
+    recuperar(id, null);
+}
+
+public void recuperar(long id, Connection conn) throws Exception {
+    String sql = "UPDATE producto SET eliminado = false WHERE id = ? AND eliminado = true";
+    boolean usarConexionExterna = (conn != null);
+
+    if (!usarConexionExterna) {
+        conn = DatabaseConnection.getConnection();
+    }
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setLong(1, id);
+        stmt.executeUpdate();
+
+        if (!usarConexionExterna) {
+            conn.commit();
+        }
+    } finally {
+        if (!usarConexionExterna && conn != null) {
+            conn.close();
+        }
+    }
+}
 
     @Override
-    public Producto getById(int id) throws Exception {
+    public Producto getById(long id) throws Exception {
         String sql = "SELECT * FROM producto WHERE id = ? AND eliminado = false";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRow(rs);
@@ -225,7 +283,7 @@ public class ProductoDAO implements GenericDAO<Producto> {
      * Maneja la conversión de categoría (String a Enum) y carga el código de barras asociado.
      */
     private Producto mapRow(ResultSet rs) throws SQLException {
-        int id = rs.getInt("id");
+        long id = rs.getLong("id");
         String nombre = rs.getString("nombre");
         String marca = rs.getString("marca");
         double precio = rs.getDouble("precio");
@@ -251,7 +309,7 @@ public class ProductoDAO implements GenericDAO<Producto> {
         producto.setEliminado(eliminado);
         
         // Cargar código de barras si existe la relación
-        int codigoBarrasId = rs.getInt("codigo_barras_id");
+        long codigoBarrasId = rs.getLong("codigo_barras_id");
         if (!rs.wasNull() && codigoBarrasId > 0) {
             try {
                 CodigoBarrasDAO codigoDAO = new CodigoBarrasDAO();
