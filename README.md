@@ -69,7 +69,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 │   4. ↪ Eliminar producto          │
 │   5. ↪ Asignar código barras      │
 │                                   │
-│  ✅ GESTIÓN DE CÓDIGOS 𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃 │
+│  ✅ GESTIÓN DE CÓDIGOS 𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃        │
 │   6. ↪ Crear código de barras     │
 │   7. ↪ Listar códigos de barras   │
 │   8. ↪ Actualizar código          │
@@ -198,11 +198,11 @@ public class DatabaseConnection {
 
 ```
 src/
-├── config/           # DatabaseConnection.java
-├── entities/         # Producto, CodigoBarras, Base, CategoriaProducto, EnumTipo
+├── config/           # DatabaseConnection
+├── model/            # Base, Producto, CodigoBarras, CategoriaProducto, EnumTipo
 ├── dao/              # GenericDAO, ProductoDAO, CodigoBarrasDAO
 ├── service/          # GenericService, ProductoService, CodigoBarrasService
-└── main/             # Main, AppMenu, MenuHandler, MenuDisplay
+└── main/             # Main, AppMenu, MenuDisplay, MenuHandler, MenuStyle 
 ```
 
 ### Características Técnicas Implementadas:
@@ -222,7 +222,7 @@ try {
 ```
 
 #### **Validaciones de Negocio**
-- **Producto**: nombre obligatorio, precio ≥ 0, stock ≥ 0
+- **Producto**: nombre obligatorio, marca, categoria, precio ≥ 0, stock ≥ 0
 - **CódigoBarras**: valor único, tipo válido, fecha obligatoria
 - **Validaciones en capa Service** con mensajes descriptivos
 
@@ -289,19 +289,21 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 | Requisito | Estado | Observaciones |
 |-----------|--------|---------------|
 | **Java 21** | ✅ | Proyecto configurado con JDK 21 |
-| **Estructura de paquetes** | ✅ | config, entities, dao, service, main |
+| **Estructura de paquetes** | ✅ | config, model, dao, service, main |
 | **Relación 1→1 unidireccional** | ✅ | Producto → CodigoBarras implementada |
 | **Patrón DAO** | ✅ | GenericDAO + implementaciones concretas |
 | **DAOs con conexión externa** | ✅ | Métodos aceptan Connection para transacciones |
 | **Capa Service con transacciones** | ✅ | Commit/rollback en todos los servicios |
 | **CRUD completo** | ✅ | 9 operaciones implementadas |
-| **Eliminación lógica** | ✅ | Campo `eliminado` en clase Base |
+| **Eliminación lógica** | ✅ | Campo `eliminado` en clase Base (soft delete) |
 | **Validaciones de negocio** | ✅ | En capa Service con mensajes descriptivos |
 | **Manejo de excepciones** | ✅ | Try-catch en todas las capas |
 | **PreparedStatement** | ✅ | En todos los DAOs |
 | **Inicialización automática BD** | ✅ | DatabaseConnection.inicializarBaseDatos() |
 | **Scripts SQL** | ✅ | Incluidos en el proyecto |
 | **Diagrama UML** | ✅ | Incluido en documentación |
+| **Video explicativo** | ✅ | Los 4 integrantes explican el trabajo |
+
 
 ---
 
@@ -315,11 +317,12 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 - Precio: ≥ 0, formato decimal (10,2)
 - Peso: ≥ 0, formato decimal (10,3) (opcional)
 - Stock: ≥ 0
+- Categoría: Elije una de Enum CategoriaProducto
 
 #### **CodigoBarrasService**
 - Tipo: EAN13, EAN8, UPC (obligatorio)
 - Valor: único, máximo 20 caracteres (obligatorio)
-- Fecha asignación: obligatoria
+- Fecha asignación: obligatoria (al asociarse a producto)
 - Observaciones: máximo 255 caracteres (opcional)
 
 ### Manejo de Transacciones:
@@ -354,8 +357,8 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 
 1. **Error de conexión a BD:**
    ```bash
-   # Verificar que MySQL esté en puerto 3307
-   netstat -an | grep 3307
+   # Verificar que MySQL esté en puerto indicado (suele ser 3306)
+   netstat -an | grep 3306
    ```
 
 2. **Driver no encontrado:**
