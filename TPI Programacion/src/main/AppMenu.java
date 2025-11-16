@@ -129,12 +129,13 @@ private void procesarOpcion(int opcion) {
         case 3 -> menuHandler.actualizarProducto();
         case 4 -> menuHandler.eliminarProducto();
         case 5 -> menuHandler.asignarCodigoDeBarras();  
-        case 6 -> menuHandler.crearCodigoBarrasIndependiente();
-        case 7 -> menuHandler.listarCodigos();   
-        case 8 -> menuHandler.actualizarCodigoBarrasPorId(); 
-        case 9 -> menuHandler.eliminarCodigoBarrasPorId();  
-        case 10 -> menuHandler.recuperarProducto(); 
+        case 6 -> menuHandler.recuperarProducto(); 
+        case 7 -> menuHandler.crearCodigoBarrasIndependiente();
+        case 8 -> menuHandler.listarCodigos();   
+        case 9 -> menuHandler.actualizarCodigoBarrasPorId(); 
+        case 10 -> menuHandler.eliminarCodigoBarrasPorId();  
         case 11 -> menuHandler.recuperarCodigoBarrasPorId(); 
+        
         case 0 -> {
             System.out.println("Saliendo...");
             running = false;

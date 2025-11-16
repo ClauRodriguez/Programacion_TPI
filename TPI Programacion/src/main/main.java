@@ -20,7 +20,6 @@ public class main {
             System.out.println("Verificando conexión a base de datos...");
             DatabaseConnection.inicializarBaseDatos();
             System.out.println("✓ Base de datos lista.\n");
-            
             AppMenu app = new AppMenu();
             app.run();
         } catch (Exception e) {
