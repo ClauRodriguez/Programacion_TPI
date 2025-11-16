@@ -96,4 +96,54 @@ public void setTipo(EnumTipo tipo) {
         return "\n---\nCódigo de barras:\n - ID: " + getId() + "\n - Tipo: " + tipo + "\n - Valor: " + valor + "\n - Fecha de asignacion: " + fechaAsignacion + "\n - Observaciones: " + obsTexto;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true; // Misma referencia en memoria
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Objeto null o de clase diferente
+        }
+        
+        CodigoBarras codigo = (CodigoBarras) obj;
+        
+        // Comparar por ID si ambos están persistidos
+        if (this.getId() > 0 && codigo.getId() > 0) {
+            return this.getId() == codigo.getId();
+        }
+        
+        // Si alguno no tiene ID, comparar por valor (campo UNIQUE)
+        if (valor == null) {
+            if (codigo.valor != null) {
+                return false;
+            }
+        } else if (!valor.equals(codigo.valor)) {
+            return false;
+        }
+        
+        // También comparar tipo para mayor seguridad
+        if (tipo != codigo.tipo) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        
+        // Si tiene ID, usar ID para hash
+        if (this.getId() > 0) {
+            return Long.hashCode(this.getId());
+        }
+        
+        // Si no tiene ID, usar valor (campo UNIQUE) para hash
+        result = prime * result + ((valor == null) ? 0 : valor.hashCode());
+        result = prime * result + ((tipo == null) ? 0 : tipo.hashCode());
+        
+        return result;
+    }
+    
 }

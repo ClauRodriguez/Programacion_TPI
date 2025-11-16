@@ -158,4 +158,71 @@ public class Producto extends Base {
         return sb.toString();
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true; // Misma referencia en memoria
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Objeto null o de clase diferente
+        }
+        
+        Producto producto = (Producto) obj;
+        
+        // Comparar por ID (campo único e inmutable)
+        // Si ambos tienen ID > 0, comparar por ID
+        if (this.getId() > 0 && producto.getId() > 0) {
+            return this.getId() == producto.getId();
+        }
+        
+        // Si alguno no tiene ID (aún no persistido), comparar por campos únicos
+        // En este caso, nombre + marca pueden ser únicos
+        if (Double.compare(producto.precio, precio) != 0) {
+            return false;
+        }
+        if (stock != producto.stock) {
+            return false;
+        }
+        if (nombre == null) {
+            if (producto.nombre != null) {
+                return false;
+            }
+        } else if (!nombre.equals(producto.nombre)) {
+            return false;
+        }
+        if (marca == null) {
+            if (producto.marca != null) {
+                return false;
+            }
+        } else if (!marca.equals(producto.marca)) {
+            return false;
+        }
+        if (categoria != producto.categoria) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        
+        // Si tiene ID, usar ID para hash (más eficiente)
+        if (this.getId() > 0) {
+            return Long.hashCode(this.getId());
+        }
+        
+        // Si no tiene ID, calcular hash basado en campos únicos
+        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+        result = prime * result + ((marca == null) ? 0 : marca.hashCode());
+        result = prime * result + ((categoria == null) ? 0 : categoria.hashCode());
+        long temp = Double.doubleToLongBits(precio);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + stock;
+        
+        return result;
+    }
+    
 }
