@@ -48,7 +48,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 - ✅ Presentación de los 4 integrantes
 - ✅ Demostración del flujo CRUD completo
 - ✅ Explicación de la relación 1→1 funcionando
-- ✅ Análisis de código por capas (entities, dao, service, main)
+- ✅ Análisis de código por capas (models, dao, service, main)
 - ✅ Demostración de transacción con rollback ante error
 - ✅ Evidencia de la integridad referencial y validaciones
 
@@ -336,7 +336,7 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 | Entregable | Estado | Detalles |
 |------------|--------|----------|
 | **Código fuente completo** | ✅ | Repositorio GitHub público |
-| **Estructura de paquetes** | ✅ | config, entities, dao, service, main |
+| **Estructura de paquetes** | ✅ | config, model, dao, service, main |
 | **Relación 1→1 unidireccional** | ✅ | Producto → CodigoBarras |
 | **Transacciones con commit/rollback** | ✅ | En ProductoService y CodigoBarrasService |
 | **DAOs con conexión externa** | ✅ | Para participación en transacciones |
