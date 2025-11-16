@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class DatabaseConnection {
     // Configuración para MySQL (compatible con MariaDB también)
-    private static final String DB_NAME = "depositotpi";
+    private static final String DB_NAME = "depositotpi1";
     private static final String HOST = "localhost";
     private static final String PORT = "3306";
     private static final String USER = "root";
