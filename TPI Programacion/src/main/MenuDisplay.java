@@ -38,27 +38,26 @@ public class MenuDisplay {
      */
 public static void mostrarMenuPrincipal() {
     System.out.println("");
-    System.out.println("┌───────────────────────────────────┐");
-    System.out.println("│  ☰  MENÚ PRINCIPAL\t\t│");
-    System.out.println("├───────────────────────────────────┤");
-    System.out.println("│  ✅ GESTIÓN DE PRODUCTOS 📦\t│");
-    System.out.println("│   1.  ↪ Crear producto\t\t│"); // Pedir y validar todos los campos y guardarlo en un Instancia de producto
-    System.out.println("│   2.  ↪ Listar productos\t\t│"); // Submenu preguntar criterio(opciones: 1. nombre, 2. marca, 3. categoria).
-    System.out.println("│   3.  ↪ Actualizar producto\t\t│"); // Método Submenu Pedir (1. ID). 
-    System.out.println("│   4.  ↪ Eliminar producto\t\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
-    System.out.println("│   5.  ↪ Asignar codigo barras a producto\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
-    System.out.println("│   6.  ↪ Recuperar producto borrado\t│");
-    System.out.println("│                                      \t\t│");
-    System.out.println("│  ✅ GESTIÓN DE CODIGOS DE BARRAS 𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃\t│");
-    System.out.println("│   7.  ↪ Crear código de barras\t│"); // Pedir y validar todos los campos y guardarlo en un Instancia de Codigo de barras
-    System.out.println("│   8.  ↪ Listar códigos de barras\t│"); // Listar por ID o por codigo. 
-    System.out.println("│   9.  ↪ Actualizar código de barras\t│"); // Pedir (ID) y actualiza valor, tipo y observaciones. 
-    System.out.println("│   10.  ↪ Eliminar código de barras\t│"); // Pedir (ID) -> manda true eliminado.
-    System.out.println("│   11.  ↪ Recuperar codigo de barras eliminado\t│");
-    System.out.println("│                                      \t\t│");
-    System.out.println("│   0.  ↩ Salir\t\t\t│");
-    System.out.println("└───────────────────────────────────┘");
+    System.out.println("┌───────────────────────────────────────────────────────────┐");
+    System.out.println("│  ☰  MENÚ PRINCIPAL\t\t\t\t│");
+    System.out.println("├───────────────────────────────────────────────────────────┤");
+    System.out.println("│  ✅ GESTIÓN DE PRODUCTOS 📦\t\t\t│");
+    System.out.println("│   1.  ↪ Crear producto\t\t\t\t│"); // Pedir y validar todos los campos y guardarlo en un Instancia de producto
+    System.out.println("│   2.  ↪ Listar productos\t\t\t\t│"); // Submenu preguntar criterio(opciones: 1. nombre, 2. marca, 3. categoria).
+    System.out.println("│   3.  ↪ Actualizar producto\t\t\t\t│"); // Método Submenu Pedir (1. ID). 
+    System.out.println("│   4.  ↪ Eliminar producto\t\t\t\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
+    System.out.println("│   5.  ↪ Asignar codigo barras a producto\t\t\t│"); // Método Submenu Pedir (1. ID) -> manda true eliminado.
+    System.out.println("│   6.  ↪ Recuperar producto borrado\t\t\t│");
+    System.out.println("│                                      \t\t\t\t│");
+    System.out.println("│  ✅ GESTIÓN DE CODIGOS DE BARRAS 𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃\t\t\t│");
+    System.out.println("│   7.  ↪ Crear código de barras\t\t\t│"); // Pedir y validar todos los campos y guardarlo en un Instancia de Codigo de barras
+    System.out.println("│   8.  ↪ Listar códigos de barras\t\t\t│"); // Listar por ID o por codigo. 
+    System.out.println("│   9.  ↪ Actualizar código de barras\t\t\t│"); // Pedir (ID) y actualiza valor, tipo y observaciones. 
+    System.out.println("│   10.  ↪ Eliminar código de barras\t\t\t│"); // Pedir (ID) -> manda true eliminado.
+    System.out.println("│   11.  ↪ Recuperar codigo barras eliminado\t\t\t│");
+    System.out.println("│                                      \t\t\t\t│");
+    System.out.println("│   0.  ↩ Salir\t\t\t\t\t│");
+    System.out.println("└───────────────────────────────────────────────────────────┘");
     System.out.print("Seleccione una opción: ");
 }
-
 }
