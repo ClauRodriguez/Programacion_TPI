@@ -1,5 +1,11 @@
 package DAO;
-//comentario de prueba
+/**
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
+ */
 import config.DatabaseConnection;
 import model.CodigoBarras;
 import model.EnumTipo;

@@ -4,7 +4,11 @@ package model;
 import java.time.LocalDate;
 
 /**
- * @author Hernán E. Bula
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
  */
 
 public class CodigoBarras extends Base {
