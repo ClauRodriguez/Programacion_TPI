@@ -75,9 +75,6 @@ public class MenuHandler {
         this.codigoBarrasService = codigoBarrasService;
     }
 
-    
-    // METODOS PRODUCTOS
-    
     /**
      * Opción 1: Crear nueva producto (con codigo opcional). Manejo de errores:
      * - IllegalArgumentException: Validaciones de negocio (muestra mensaje al
@@ -88,48 +85,39 @@ public class MenuHandler {
      */
     public void crearProducto() {
         try {
-            // Capturar datos con validaciones. Después se vuelven a chequear en el Service)
-            String nombre = validarEntradaString(scanner, "Nombre", 120); // Valida que el nombre no esté vacio y no tenga más de 120 caracteres
+            String nombre = validarEntradaString(scanner, "Nombre", 120);
             
-            String marca = validarEntradaString(scanner, "Marca", 80); // Valida que el nombre no esté vacio y no tenga más de 80 caracteres
+            String marca = validarEntradaString(scanner, "Marca", 80);
                      
-            double precio = validarDoublePositivo("Precio", scanner); // Valida que el precio sea numero y positivo
+            double precio = validarDoublePositivo("Precio", scanner);
             
-            double peso = validarDoublePositivo("Peso", scanner); // Valida que el peso sea numero y positivo
+            double peso = validarDoublePositivo("Peso", scanner);
             
-            int stock = validarIntPositivo("Stock", scanner); // Valida que el stock sea numero entero y positivo
+            int stock = validarIntPositivo("Stock", scanner);
 
             Producto producto = new Producto(nombre, marca, precio, peso, stock, 0);
             
-            // Seleccionar categoría
             CategoriaProducto categoria = seleccionarCategoria();
             producto.setCategoria(categoria);
 
-            // Manejar código de barras si el usuario lo desea
             CodigoBarras codigo = null;
-            System.out.print("¿Desea agregar un codigo de barras? (ingrese \"s\" para Si o cualquier otro caracter para no): "); // Pregunta si desea agregar Codigo de Barras
+            System.out.print("¿Desea agregar un codigo de barras? (ingrese \"s\" para Si o cualquier otro caracter para no): ");
             if (scanner.nextLine().equalsIgnoreCase("s")) {
                 codigo = crearCodigoBarras();
             }
 
-            // Guardar producto (el Service valida y maneja errores)
             try {
-                // Si hay código de barras, usar método transaccional que inserta ambos en una sola transacción
                 if (codigo != null) {
                     productoService.insertarConCodigoBarras(producto, codigo);
                     System.out.println("✓ Producto con código de barras creado exitosamente: " + producto.getNombre());
                 } else {
-                    // Si no hay código de barras, insertar solo el producto
                     productoService.insertar(producto);
                     System.out.println("✓ Producto creado exitosamente: " + producto.getNombre());
                 }
                 
             } catch (IllegalArgumentException e) {
-                // Errores de validación - mostrar mensaje amigable
-                // El rollback se maneja automáticamente en el Service
                 System.err.println("Error de validación: " + e.getMessage());
             } catch (Exception e) {
-                // Errores de base de datos - el rollback se maneja automáticamente en el Service
                 System.err.println("Error al crear producto: " + e.getMessage());
             }
 
@@ -144,10 +132,6 @@ public class MenuHandler {
      * Opción 2: Listar productos (todas o filtradas por nombre).
      *
      * Si no hay productos: Muestra "No se encontraron productos"
-     *
-     * // ME DIJERON EN CONSULTA QUE HAY QUE PEDIRLE A LA DB LA LISTA, 
-     * // Y SI ES NECESARIO UN CRITERIO APLICAR UN FILTRO EN EL MISMO PEDIDO. 
-     * // IGUAL SI HAY QUE ORDENAR.
      */
     public void listarProductos() {
         try {
@@ -179,7 +163,7 @@ public class MenuHandler {
                     return;
                 default:
                     System.out.println("Opción inválida.");
-                    return; // Salir si la opción es inválida
+                    return;
             }
             
             if (productos == null || productos.isEmpty()) {
@@ -238,14 +222,12 @@ public class MenuHandler {
                 return new ArrayList<>();
             }
             
-            // Buscar por nombre exacto primero
             Producto producto = productoService.getByNombre(filtro);
             List<Producto> resultado = new ArrayList<>();
             
             if (producto != null) {
                 resultado.add(producto);
             } else {
-                // Si no hay coincidencia exacta, buscar en todos los productos
                 List<Producto> todos = productoService.getAll();
                 if (todos != null) {
                     for (Producto p : todos) {
@@ -268,7 +250,6 @@ public class MenuHandler {
             CategoriaProducto categoriaElegida = seleccionarCategoria();
             System.out.println("\nBuscando productos de la categoría: " + categoriaElegida.name());
             
-            // Obtener todos los productos y filtrar por categoría
             List<Producto> todos = productoService.getAll();
             List<Producto> productosCategoria = new ArrayList<>();
             
@@ -299,7 +280,6 @@ public class MenuHandler {
         try {
             int id = validarIntPositivo("ID del producto a actualizar: ", scanner);
 
-            // Obtener producto de la base de datos
             Producto productoActualizar = productoService.getById(id);
 
             if (productoActualizar == null) {
@@ -328,21 +308,21 @@ public class MenuHandler {
             String precioStr = scanner.nextLine().trim();
             if (!precioStr.isEmpty()) {
                 double precio = Double.parseDouble(precioStr);
-                productoActualizar.setPrecio(precio); // La validación la hace el Service
+                productoActualizar.setPrecio(precio);
             }
 
             System.out.print("Peso actual: " + productoActualizar.getPeso() + "\nIngrese el nuevo peso (Enter para mantener): ");
             String pesoStr = scanner.nextLine().trim();
             if (!pesoStr.isEmpty()) {
                 double peso = Double.parseDouble(pesoStr);
-                productoActualizar.setPeso(peso); // La validación la hace el Service
+                productoActualizar.setPeso(peso);
             }
 
             System.out.print("Stock actual: " + productoActualizar.getStock() + "\nIngrese el nuevo stock (Enter para mantener): ");
             String stockStr = scanner.nextLine().trim();
             if (!stockStr.isEmpty()) {
                 int stock = Integer.parseInt(stockStr);
-                productoActualizar.setStock(stock); // La validación la hace el Service
+                productoActualizar.setStock(stock);
             }
 
             System.out.print("Categoria actual: " + productoActualizar.getCategoria() + "\n");
@@ -352,12 +332,10 @@ public class MenuHandler {
                 productoActualizar.setCategoria(nuevaCategoria);
             }
 
-            // Guardar cambios en la base de datos (validaciones en Service)
             try {
                 productoService.actualizar(productoActualizar);
                 System.out.println("\n✓ Producto actualizado exitosamente: " + productoActualizar.getNombre());
             } catch (IllegalArgumentException e) {
-                // Errores de validación - mostrar mensaje amigable
                 System.err.println("Error de validación: " + e.getMessage());
             } catch (Exception e) {
                 System.err.println("Error al actualizar producto: " + e.getMessage());
@@ -380,7 +358,6 @@ public class MenuHandler {
         try {
             int id = validarIntPositivo("Ingrese el ID del producto a eliminar: ", scanner);
 
-            // Obtener producto de la base de datos
             Producto productoEliminar = productoService.getById(id);
 
             if (productoEliminar == null) {
@@ -413,7 +390,6 @@ public void asignarCodigoDeBarras() {
     try {
         int idProducto = validarIntPositivo("ID del producto al que se le asignará un código de barras: ", scanner);
 
-        // Obtener producto de la base de datos
         Producto productoActualizar = productoService.getById(idProducto);
 
         if (productoActualizar == null) {
@@ -478,13 +454,11 @@ public void recuperarProducto() {
         System.err.println("Error al recuperar producto: " + e.getMessage());
         e.printStackTrace();
     }
-}
-    // METODOS CODIGO DE BARRAS
-    
+    }
     
     private CodigoBarras crearCodigoBarras() {
-        int id = 0; // lo asignará la BD posteriormente // REVISAR QUE ID DEBE SER Long
-        EnumTipo tipo = elegirTipoCodigo(); // <-- ahora sí es EnumTipo
+        int id = 0;
+        EnumTipo tipo = elegirTipoCodigo();
 
         String valor = validarEntradaString(scanner, "Valor", 12);
 
@@ -492,10 +466,7 @@ public void recuperarProducto() {
 
         String observaciones = validarEntradaString(scanner, "Observaciones (opcional):");
 
-        // IMPORTANTE: Guardar el valor TAL CUAL, sin convertir a null
-        // Si está vacío, guardar como cadena vacía, NO como null
-        // Esto asegura que si el usuario ingresa algo, se guarde
-        String observacionesFinal = observaciones; // NO convertir a null
+        String observacionesFinal = observaciones;
 
         return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
     }
@@ -524,7 +495,6 @@ public void crearCodigoBarrasIndependiente() {
     }
 }
     
-    //NUEVO 
     /**
      * Opción 7: Listar todos los Codigod de Barras activos.
      *
@@ -558,7 +528,7 @@ public void crearCodigoBarrasIndependiente() {
                 return;
             default:
                 System.out.println("Opción inválida.");
-                return; // Salir si la opción es inválida
+                return;
         }
 
         if (codigoBarras == null || codigoBarras.isEmpty()) {
@@ -610,8 +580,7 @@ private List<CodigoBarras> listarPorIdCodigo() {
         System.err.println("Error al buscar producto por ID: " + e.getMessage());
         return new ArrayList<>();
     }
-}
-    // NUEVO
+    }
      /**
      * Opción 8: Actualizar Código de Barras por ID.
      *
@@ -624,9 +593,8 @@ private List<CodigoBarras> listarPorIdCodigo() {
      */
    public void actualizarCodigoBarrasPorId() {
     try {
-        int id = validarIntPositivo("ID del codigo de barras a actualizar: ", scanner); // REVISAR QUE ID DEBE SER Long
+        int id = validarIntPositivo("ID del codigo de barras a actualizar: ", scanner);
 
-        // Obtener codigo de la base de datos
         CodigoBarras codigoBarrasActualizar = codigoBarrasService.getById(id);
 
         if (codigoBarrasActualizar == null) {
@@ -667,9 +635,7 @@ private List<CodigoBarras> listarPorIdCodigo() {
     } catch (Exception e) {
         System.err.println("Error al actualizar el codigo de barras: " + e.getMessage());
     }
-}
-    
-    // NUEVO
+    }
     
      /**
      * Opción 9: Eliminar Codigo de barras por ID (PELIGROSO - soft delete directo).
@@ -688,7 +654,6 @@ private List<CodigoBarras> listarPorIdCodigo() {
         try {
             int id = validarIntPositivo("Ingrese el ID del código de barras a eliminar: ", scanner);
 
-            // Obtener código de la base de datos
             CodigoBarras codigoEliminar = codigoBarrasService.getById(id);
 
             if (codigoEliminar == null) {
@@ -743,7 +708,6 @@ private List<CodigoBarras> listarPorIdCodigo() {
         e.printStackTrace();
     }
 }
-    // METODOS SELECCION DE OPCIONES
     
     /**
      * Método auxiliar privado: Permite al usuario seleccionar una categoría de producto.
@@ -795,7 +759,7 @@ private List<CodigoBarras> listarPorIdCodigo() {
             try {
                 int opcion = Integer.parseInt(scanner.nextLine().trim());
                 if (opcion >= 1 && opcion <= tipos.length) {
-                    return tipos[opcion - 1]; // índice correcto
+                    return tipos[opcion - 1];
                 } else {
                     System.out.println("La opción debe estar entre 1 y " + tipos.length);
                 }
@@ -805,9 +769,6 @@ private List<CodigoBarras> listarPorIdCodigo() {
         }
     }
 
-    
-    // METODOS PARA VALIDACIONES 
-    
          /**
      * Valida y obtiene un número entero positivo desde la entrada del usuario.
      *
@@ -825,13 +786,13 @@ private List<CodigoBarras> listarPorIdCodigo() {
         do {
             try {
                 System.out.print(mensaje);
-                num = Integer.parseInt(scanner.nextLine()); // Si se ingresa un double se transforma en int
+                num = Integer.parseInt(scanner.nextLine());
                 if (num >= 0) {
                     bandera = true;
                 } else {
                     System.out.println("*ERROR. No puede ser un número negativo. ");
                 }
-            } catch (NumberFormatException nfe) { // Captura error si no se ingresa numero
+            } catch (NumberFormatException nfe) {
                 System.out.println("Solo admite caracteres numericos.");
             }
         } while (!bandera);
@@ -861,7 +822,7 @@ private List<CodigoBarras> listarPorIdCodigo() {
                 } else {
                     System.out.println("*ERROR. No puede ser un número negativo. ");
                 }
-            } catch (NumberFormatException nfe) { // Captura error si no se ingresa numero
+            } catch (NumberFormatException nfe) {
                 System.out.println("Solo admite caracteres numericos.");
             }
         } while (!bandera);

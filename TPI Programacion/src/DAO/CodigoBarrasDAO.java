@@ -1,5 +1,4 @@
 package DAO;
-//comentario de prueba
 import config.DatabaseConnection;
 import model.CodigoBarras;
 import model.EnumTipo;
@@ -31,36 +30,30 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
         
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, entidad.getTipo().name()); // Enum a String
+            stmt.setString(1, entidad.getTipo().name());
             stmt.setString(2, entidad.getValor());
-            stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion())); // LocalDate a sql.Date
+            stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion()));
             
-            // IMPORTANTE: Guardar observaciones SIEMPRE, incluso si es cadena vacía
             String obsValue = entidad.getObservaciones();
             
-            // Si tiene valor, guardarlo (trim si es necesario pero mantener el valor)
             if (obsValue != null && !obsValue.trim().isEmpty()) {
                 stmt.setString(4, obsValue.trim());
             } else {
-                // Si es null o cadena vacía, guardar como NULL
                 stmt.setNull(4, Types.VARCHAR);
             }
 
             stmt.executeUpdate();
 
-            // Recuperar id generado automáticamente por la BD
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     entidad.setId(rs.getLong(1));
                 }
             }
             
-            // Solo hacer commit si manejamos la conexión
             if (!usarConexionExterna) {
                 conn.commit();
             }
         } finally {
-            // Solo cerrar si manejamos la conexión
             if (!usarConexionExterna && conn != null) {
                 conn.close();
             }
@@ -90,7 +83,6 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
             stmt.setString(2, entidad.getValor());
             stmt.setDate(3, Date.valueOf(entidad.getFechaAsignacion()));
             
-            // Actualizar observaciones (puede ser null)
             if (entidad.getObservaciones() != null && !entidad.getObservaciones().trim().isEmpty()) {
                 stmt.setString(4, entidad.getObservaciones());
             } else {
@@ -101,12 +93,10 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
 
             stmt.executeUpdate();
             
-            // Solo hacer commit si manejamos la conexión
             if (!usarConexionExterna) {
                 conn.commit();
             }
         } finally {
-            // Solo cerrar si manejamos la conexión
             if (!usarConexionExterna && conn != null) {
                 conn.close();
             }
@@ -135,12 +125,10 @@ public class CodigoBarrasDAO implements GenericDAO<CodigoBarras> {
             stmt.setLong(1, id);
             stmt.executeUpdate();
             
-            // Solo hacer commit si manejamos la conexión
             if (!usarConexionExterna) {
                 conn.commit();
             }
         } finally {
-            // Solo cerrar si manejamos la conexión
             if (!usarConexionExterna && conn != null) {
                 conn.close();
             }
@@ -223,7 +211,6 @@ public void recuperar(long id, Connection conn) throws Exception {
                 if (rs.next()) return mapRow(rs);
             }
         } finally {
-            // Solo cerrar si manejamos la conexión
             if (!usarConexionExterna && conn != null) {
                 conn.close();
             }
@@ -248,12 +235,8 @@ public void recuperar(long id, Connection conn) throws Exception {
         java.sql.Date sqlDate = rs.getDate("fecha_asignacion");
         LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : null;
 
-        // Leer observaciones - puede ser null en la BD
         String observaciones = rs.getString("observaciones");
-        // Si rs.getString devuelve null, el objeto tendrá null
-        // Si devuelve cadena vacía, también se mantiene
 
-        // Constructor: (int id, boolean eliminado, EnumTipo tipo, String valor, LocalDate fechaAsignacion, String observaciones)
         return new CodigoBarras(id, eliminado, tipo, valor, fecha, observaciones);
     }
 }
