@@ -1,19 +1,21 @@
+# 📦 Sistema de Gestión de Productos con Códigos de Barras
+
 ### 📍 **Universidad Tecnológica Nacional**  
 ### *TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN A DISTANCIA*
 
 ## 💻 Programación II 
 #### **Año:** 2025
-.
+
 ## ✨ Docentes  
 #### 👨‍🏫 Coordinador: Carlos Martinez
 #### 👩‍🏫 Profesores: Ariel Enferrel | Cinthia Rigoni | Alberto Cortez
-.
+
 ## 👥 Estudiantes  
 #### Hernan Cóceres | Claudio Rodriguez | Hernan E. Bula | Gaston A. Cejas 
+
 ---
 ## Trabajo Final Integrador
 ---
-# 📦 Sistema de Gestión de Productos con Códigos de Barras
 
 ## 🏪 Descripción
 
@@ -23,7 +25,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 - **Relación 1→1 unidireccional**: Solo Producto referencia a CódigoBarras
 - **Gestión completa CRUD** para ambas entidades
 - **Transacciones atómicas** con commit/rollback
-- **Eliminación lógica** (soft delete)
+- **Eliminación lógica** (soft delete) con funcionalidad de recuperación
 - **Arquitectura en capas** (DAO + Service)
 - **Validaciones de negocio** robustas
 
@@ -36,26 +38,15 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 **Elementos principales del diagrama:**
 - **Relación 1→1 unidireccional**: Producto → CodigoBarras
 - **Arquitectura en 5 capas**: config, model, dao, service, main
-
----
-
-## 🎥 Video Explicativo
-
-📹 **Enlace al video de demostración:**  
-[INSERTAR_ENLACE_AL_VIDEO_AQUÍ]
-
-**Contenido del video (15 minutos):**
-- ✅ Presentación de los 4 integrantes
-- ✅ Demostración del flujo CRUD completo
-- ✅ Explicación de la relación 1→1 funcionando
-- ✅ Análisis de código por capas (models, dao, service, main)
-- ✅ Demostración de transacción con rollback ante error
-- ✅ Evidencia de la integridad referencial y validaciones
+- **Clase Base**: Implementa eliminación lógica con `id: Long` y `eliminado: Boolean`
+- **Enumeraciones**: CategoriaProducto y EnumTipo para validaciones
+- **Patrón DAO**: GenericDAO con implementaciones específicas
+- **Capa Service**: Gestión de transacciones y validaciones de negocio
 
 ---
 
 ## 🎯 Flujo de Uso - Menú Principal
-#### El menú debe visualizarse de la siguiente manera (con UTF-8):
+
 ```
 ┌───────────────────────────────────┐
 │  ☰  MENÚ PRINCIPAL                │
@@ -66,12 +57,14 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 │   3. ↪ Actualizar producto        │
 │   4. ↪ Eliminar producto          │
 │   5. ↪ Asignar código barras      │
+│   6. ↪ Recuperar producto borrado │
 │                                   │
 │  ✅ GESTIÓN DE CÓDIGOS 𝄃𝄃𝄂𝄂𝄀𝄁𝄃𝄂𝄂𝄃        │
-│   6. ↪ Crear código de barras     │
-│   7. ↪ Listar códigos de barras   │
-│   8. ↪ Actualizar código          │
-│   9. ↪ Eliminar código            │
+│   7. ↪ Crear código de barras     │
+│   8. ↪ Listar códigos de barras   │
+│   9. ↪ Actualizar código          │
+│   10. ↪ Eliminar código           │
+│   11. ↪ Recuperar código eliminado│
 │                                   │
 │   0. ↩ Salir                      │
 └───────────────────────────────────┘
@@ -79,7 +72,7 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 
 ### Funcionalidades CRUD Completas:
 
-#### Gestión de Productos (Opciones 1-5)
+#### Gestión de Productos (Opciones 1-6)
 | Operación | Descripción | Validaciones |
 |-----------|-------------|--------------|
 | **1. Crear** | Producto con/sin código de barras | Nombre ≠ vacío, Precio ≥ 0, Stock ≥ 0 |
@@ -87,16 +80,18 @@ El sistema implementa un **sistema de gestión de inventario** para depósitos o
 | **3. Actualizar** | Campos individuales | Validaciones por campo |
 | **4. Eliminar** | Soft delete | Confirmación requerida |
 | **5. Asignar código** | Asignar código de barras a producto existente | Producto y código deben existir, relación 1→1 preservada |
+| **6. Recuperar** | Reactivar producto eliminado | Producto debe existir y estar marcado como eliminado |
 
-#### Gestión de Códigos de Barras (Opciones 6-9)
+#### Gestión de Códigos de Barras (Opciones 7-11)
 | Operación | Descripción | Validaciones |
 |-----------|-------------|--------------|
-| **6. Crear** | Código independiente | Valor único, Tipo válido |
-| **7. Listar** | Todos los códigos activos | - |
-| **8. Actualizar** | Valor, tipo, observaciones | Mantener unicidad del valor |
-| **9. Eliminar** | Soft delete | Confirmación requerida |
+| **7. Crear** | Código independiente | Valor único, Tipo válido |
+| **8. Listar** | Todos los códigos activos | - |
+| **9. Actualizar** | Valor, tipo, observaciones | Mantener unicidad del valor |
+| **10. Eliminar** | Soft delete | Confirmación requerida |
+| **11. Recuperar** | Reactivar código eliminado | Código debe existir y estar marcado como eliminado |
 
-#### Funcionalidad de Relación 1→1
+#### Funcionalidades de Relación 1→1
 **Opción 5: Asignar código de barras a producto existente**
 - Permite vincular un código de barras existente a un producto
 - Valida que ambos existan y no estén eliminados
@@ -157,7 +152,7 @@ En `config/DatabaseConnection.java`:
 public class DatabaseConnection {
     private static final String DB_NAME = "depositotpi";
     private static final String HOST = "localhost";
-    private static final String PORT = "3307";  // Puerto 3307
+    private static final String PORT = "3306";
     private static final String USER = "root";
     private static final String PASSWORD = "";
     
@@ -192,7 +187,7 @@ public class DatabaseConnection {
 
 ## 🏗️ Arquitectura del Sistema
 
-### Estructura de Paquetes Actualizada:
+### Estructura de Paquetes:
 
 ```
 src/
@@ -200,7 +195,7 @@ src/
 ├── model/            # Base, Producto, CodigoBarras, CategoriaProducto, EnumTipo
 ├── dao/              # GenericDAO, ProductoDAO, CodigoBarrasDAO
 ├── service/          # GenericService, ProductoService, CodigoBarrasService
-└── main/             # Main, AppMenu, MenuDisplay, MenuHandler, MenuStyle 
+└── main/             # Main, AppMenu, MenuDisplay, MenuHandler
 ```
 
 ### Características Técnicas Implementadas:
@@ -292,16 +287,15 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 | **Patrón DAO** | ✅ | GenericDAO + implementaciones concretas |
 | **DAOs con conexión externa** | ✅ | Métodos aceptan Connection para transacciones |
 | **Capa Service con transacciones** | ✅ | Commit/rollback en todos los servicios |
-| **CRUD completo** | ✅ | 9 operaciones implementadas |
+| **CRUD completo** | ✅ | 11 operaciones implementadas |
 | **Eliminación lógica** | ✅ | Campo `eliminado` en clase Base (soft delete) |
+| **Recuperación de eliminados** | ✅ | Opciones 6 y 11 del menú |
 | **Validaciones de negocio** | ✅ | En capa Service con mensajes descriptivos |
 | **Manejo de excepciones** | ✅ | Try-catch en todas las capas |
 | **PreparedStatement** | ✅ | En todos los DAOs |
 | **Inicialización automática BD** | ✅ | DatabaseConnection.inicializarBaseDatos() |
 | **Scripts SQL** | ✅ | Incluidos en el proyecto |
 | **Diagrama UML** | ✅ | Incluido en documentación |
-| **Video explicativo** | ✅ | Los 4 integrantes explican el trabajo |
-
 
 ---
 
@@ -331,6 +325,22 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 
 ---
 
+## 🎥 Video Explicativo
+
+📹 **Enlace al video de demostración:**  
+[INSERTAR_ENLACE_AL_VIDEO_AQUÍ]
+
+**Contenido del video (15 minutos):**
+- ✅ Presentación de los 4 integrantes
+- ✅ Demostración del flujo CRUD completo
+- ✅ Explicación de la relación 1→1 funcionando
+- ✅ Análisis de código por capas (models, dao, service, main)
+- ✅ Demostración de transacción con rollback ante error
+- ✅ Evidencia de la integridad referencial y validaciones
+- ✅ Demostración de eliminación y recuperación lógica
+
+---
+
 ## 📊 Entregables Completados
 
 | Entregable | Estado | Detalles |
@@ -341,7 +351,7 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 | **Transacciones con commit/rollback** | ✅ | En ProductoService y CodigoBarrasService |
 | **DAOs con conexión externa** | ✅ | Para participación en transacciones |
 | **Validaciones de negocio** | ✅ | En capa Service |
-| **CRUD completo** | ✅ | 9 operaciones implementadas |
+| **CRUD completo** | ✅ | 11 operaciones implementadas |
 | **Scripts SQL** | ✅ | Incluidos y probados |
 | **Documentación README** | ✅ | Completa y detallada |
 | **Diagrama UML** | ✅ | Incluido en documentación |
@@ -370,6 +380,10 @@ public void insertarConCodigoBarras(Producto producto, CodigoBarras codigo) thro
 4. **Error de valor único en código de barras:**
    - El sistema valida automáticamente duplicados
    - Usar valores diferentes para cada código
+
+5. **Caracteres especiales en menú:**
+   - Asegurarse que la consola soporte UTF-8
+   - En Windows: usar Consola de Windows o PowerShell
 
 ---
 
