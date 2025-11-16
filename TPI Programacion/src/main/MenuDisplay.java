@@ -34,7 +34,7 @@ public class MenuDisplay {
      * 4. Eliminar producto: Soft delete de producto (NO elimina codigo asociado)
      * 0. Salir: Termina la aplicación
      *
-     * Nota: Los números de opción corresponden al switch en AppMenu.processOption().
+     * Nota: Los números de opción corresponden al switch en AppMenu.procesarOpcion().
      */
 public static void mostrarMenuPrincipal() {
     System.out.println("");

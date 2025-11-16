@@ -1,19 +1,24 @@
 package config;
-
+/**
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
+ */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConnection {
-    // Configuración para MySQL (compatible con MariaDB también)
-    private static final String DB_NAME = "depositotpi1";
+    // Configuración para MySQL 
+    private static final String DB_NAME = "depositotpi";
     private static final String HOST = "localhost";
     private static final String PORT = "3306";
     private static final String USER = "root";
     private static final String PASSWORD = "";
     
-    // Detectar qué driver se está usando (MySQL o MariaDB)
     private static final String JDBC_PROTOCOL;
     private static final String URL_WITH_DB;
     private static final String URL_WITHOUT_DB;
@@ -22,12 +27,10 @@ public class DatabaseConnection {
         String protocol = "mysql"; // Por defecto MySQL
         
         try {
-            // Intentar cargar driver de MySQL primero (más común)
             Class.forName("com.mysql.cj.jdbc.Driver");
             protocol = "mysql";
         } catch (ClassNotFoundException e) {
             try {
-                // Si no está MySQL, intentar con MariaDB
                 Class.forName("org.mariadb.jdbc.Driver");
                 protocol = "mariadb";
             } catch (ClassNotFoundException e2) {
@@ -48,19 +51,13 @@ public class DatabaseConnection {
      * Debe llamarse al inicio de la aplicación antes de usar getConnection().
      */
     public static void inicializarBaseDatos() throws SQLException {
-        try {
-            // Intentar conectar para verificar si existe
-            try (Connection conn = DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD)) {
-                // Si se conecta, la BD existe
-                return;
-            }
+        try (Connection conn = DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD)) {
+            return;
         } catch (SQLException e) {
-            // Si la BD no existe (error 1049), crearla
             if (e.getErrorCode() == 1049 || e.getMessage().contains("Unknown database")) {
                 System.out.println("⚠ Base de datos '" + DB_NAME + "' no encontrada. Intentando crearla...");
                 crearBaseDatosSiNoExiste();
             } else {
-                // Si es otro error, lanzarlo
                 throw e;
             }
         }
@@ -71,8 +68,6 @@ public class DatabaseConnection {
             throw new SQLException("Configuración de la base de datos incompleta o inválida.");
         }
         
-        // Intentar conectar a la base de datos
-        // Nota: La BD debe estar inicializada previamente con inicializarBaseDatos()
         return DriverManager.getConnection(URL_WITH_DB, USER, PASSWORD);
     }
     
@@ -84,14 +79,11 @@ public class DatabaseConnection {
         try (Connection conn = DriverManager.getConnection(URL_WITHOUT_DB, USER, PASSWORD);
              Statement stmt = conn.createStatement()) {
             
-            // Crear base de datos si no existe
             stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
             System.out.println("✓ Base de datos '" + DB_NAME + "' creada exitosamente.");
             
-            // Usar la base de datos
             stmt.executeUpdate("USE " + DB_NAME);
             
-            // Tabla codigo_barras
             String sqlCodigoBarras = 
                 "CREATE TABLE IF NOT EXISTS codigo_barras (" +
                 "  id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
@@ -106,7 +98,6 @@ public class DatabaseConnection {
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
             stmt.executeUpdate(sqlCodigoBarras);
             
-            // Tabla producto
             String sqlProducto =
                 "CREATE TABLE IF NOT EXISTS producto (" +
                 "  id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
@@ -132,7 +123,6 @@ public class DatabaseConnection {
             
             System.out.println("✓ Base de datos y tablas inicializadas correctamente.\n");
             
-            // Insertar datos de prueba
             insertarDatosPrueba(conn);
             
         } catch (SQLException e) {
@@ -148,7 +138,6 @@ public class DatabaseConnection {
 
         try (Statement stmt = conn.createStatement()) {
 
-            // Insertar códigos de barras
             String insertCodigos
                     = "INSERT IGNORE INTO codigo_barras (id, tipo, valor, fecha_asignacion, observaciones) VALUES "
                     + "(1, 'EAN13', '7791234567890', '2025-10-01', 'Lote L123 - Leche entera premium'), "
@@ -170,7 +159,6 @@ public class DatabaseConnection {
 
         } catch (SQLException e) {
             System.err.println("⚠ Advertencia: No se pudieron insertar los datos de prueba: " + e.getMessage());
-            // No lanzamos la excepción para permitir que la aplicación continúe
         }
     }
 }

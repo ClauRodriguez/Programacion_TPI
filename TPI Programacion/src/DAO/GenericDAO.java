@@ -1,6 +1,12 @@
 
 package DAO;
-
+/**
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
+ */
 import java.util.List;
 
 public interface GenericDAO<T> {

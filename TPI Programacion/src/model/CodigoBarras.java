@@ -4,16 +4,15 @@ package model;
 import java.time.LocalDate;
 
 /**
- * @author Hernán E. Bula
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
  */
 
 public class CodigoBarras extends Base {
     
-// tipo             Enum {EAN13, EAN8, UPC} 	NOT NULL 
-// valor            String 			NOT NULL, UNIQUE, máx. 20 
-// fechaAsignacion  java.time.LocalDate
-// observaciones     String 			máx. 255
-
     private EnumTipo tipo;
     private String valor;
     private LocalDate fechaAsignacion;
@@ -28,9 +27,6 @@ public class CodigoBarras extends Base {
     }
     public CodigoBarras() {
     }
-    
-    
-// GETTERS
     
     public EnumTipo getTipo() {
         return tipo;
@@ -47,9 +43,7 @@ public class CodigoBarras extends Base {
     public String getObservaciones() {
         return observaciones;
     }
-    
-// SETTERS
-    
+
     /**
      * Establece el tipo de Codigo de Barras.
      * Validación: CodigoServiceImpl verifica que no esté vacío. 
@@ -84,12 +78,9 @@ public void setTipo(EnumTipo tipo) {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
-    
-// METODOS
 
     @Override
     public String toString() {
-        // Mostrar observaciones correctamente, incluso si es null
         String obsTexto = (observaciones != null && !observaciones.trim().isEmpty()) 
             ? observaciones 
             : "(sin observaciones)";
@@ -99,20 +90,18 @@ public void setTipo(EnumTipo tipo) {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
-            return true; // Misma referencia en memoria
+            return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
-            return false; // Objeto null o de clase diferente
+            return false;
         }
         
         CodigoBarras codigo = (CodigoBarras) obj;
         
-        // Comparar por ID si ambos están persistidos
         if (this.getId() > 0 && codigo.getId() > 0) {
             return this.getId() == codigo.getId();
         }
         
-        // Si alguno no tiene ID, comparar por valor (campo UNIQUE)
         if (valor == null) {
             if (codigo.valor != null) {
                 return false;
@@ -121,7 +110,6 @@ public void setTipo(EnumTipo tipo) {
             return false;
         }
         
-        // También comparar tipo para mayor seguridad
         if (tipo != codigo.tipo) {
             return false;
         }
@@ -134,12 +122,10 @@ public void setTipo(EnumTipo tipo) {
         final int prime = 31;
         int result = 1;
         
-        // Si tiene ID, usar ID para hash
         if (this.getId() > 0) {
             return Long.hashCode(this.getId());
         }
         
-        // Si no tiene ID, usar valor (campo UNIQUE) para hash
         result = prime * result + ((valor == null) ? 0 : valor.hashCode());
         result = prime * result + ((tipo == null) ? 0 : tipo.hashCode());
         

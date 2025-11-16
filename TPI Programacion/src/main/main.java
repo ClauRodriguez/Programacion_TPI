@@ -16,7 +16,6 @@ public class main {
         System.out.println("=== SISTEMA DE GESTION DE PRODUCTOS ===");
         System.out.println("Iniciando aplicacion...\n");
         try {
-            // Inicializar base de datos al inicio (crearla si no existe)
             System.out.println("Verificando conexión a base de datos...");
             DatabaseConnection.inicializarBaseDatos();
             System.out.println("✓ Base de datos lista.\n");

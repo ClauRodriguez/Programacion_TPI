@@ -16,20 +16,12 @@ package model;
 
 public abstract class Base {
 
-// ATRIBUTOS
-
-    private long id; // Identificador único de la entidad. Generado automáticamente por la base de datos (AUTO_INCREMENT).
+    private long id;
     
-    private boolean eliminado; // Bandera de eliminación lógica. Mantiene integridad referencial y datos históricos
-    // -> true: eliminada (no se mostrará en consultas)
-    // -> false: activa
+    private boolean eliminado;
     
-    
-// CONSTRUCTORES
-    
-    protected Base() { // Constructor por defecto.
-        this.eliminado = false; // Por defecto, las entidades nuevas NO están eliminadas.
-        // Inicializa sin ID: debe ser asignada por DB.
+    protected Base() {
+        this.eliminado = false;
     }
     
     protected Base(long id, boolean eliminado) {

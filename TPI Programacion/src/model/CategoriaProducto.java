@@ -1,7 +1,11 @@
 package model;
 
 /**
- * @author Hernán E. Bula
+ * @authors 
+ * Gaston Alberto Cejas, 
+ * Hernan Cóceres, 
+ * Claudio Rodriguez, 
+ * Hernan E.Bula
  */
 public enum CategoriaProducto {
     ALIMENTOS("Productos comestibles"),
@@ -19,10 +23,4 @@ public enum CategoriaProducto {
     public String getDescripcion() {
         return descripcion;
     }
-    
-    public void imprimirCategorias() { 
-        System.out.println(CategoriaProducto.values());
-    }
-   
-
 }
