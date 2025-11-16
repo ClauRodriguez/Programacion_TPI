@@ -67,7 +67,6 @@ public class AppMenu {
      */
     public AppMenu() {
         this.scanner = new Scanner(System.in);
-        // Crear servicios e inyectarlos
         ProductoService productoService = createProductoService();
         CodigoBarrasService codigoBarrasService = createCodigoBarrasService();
         this.menuHandler = new MenuHandler(scanner, productoService, codigoBarrasService);
@@ -89,7 +88,7 @@ public class AppMenu {
         while (running) {
             try {
                 MenuDisplay.mostrarMenuPrincipal();
-                System.out.flush(); // Forzar salida inmediata
+                System.out.flush();
                 String input = scanner.nextLine();
                 if (input == null || input.trim().isEmpty()) {
                     continue;
@@ -164,8 +163,4 @@ private void procesarOpcion(int opcion) {
     private CodigoBarrasService createCodigoBarrasService() {
         return new CodigoBarrasService();
     }
-    
-    // NO DEBERÍAMOS AQUI TAMBIÉN IMPLEMENTAR ESTO:
-    // CodigoDAO codigoDAO = new CodigoDAO();
-    // ProductoDAO productoDAO = new ProductoDAO(codigoDAO);
 }

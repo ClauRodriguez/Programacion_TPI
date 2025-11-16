@@ -23,10 +23,4 @@ public enum CategoriaProducto {
     public String getDescripcion() {
         return descripcion;
     }
-    
-    public void imprimirCategorias() { 
-        System.out.println(CategoriaProducto.values());
-    }
-   
-
 }
