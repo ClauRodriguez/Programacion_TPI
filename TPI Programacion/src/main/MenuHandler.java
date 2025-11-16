@@ -442,7 +442,7 @@ public class MenuHandler {
     private CodigoBarras crearCodigoBarras() {
         int id = 0;
         EnumTipo tipo = elegirTipoCodigo();
-        String valor = validarEntradaString(scanner, "Valor", 12);
+        String valor = validarEntradaString(scanner, "Valor", 20);
         LocalDate fechaAsignacion = LocalDate.now();
         String observaciones = validarEntradaString(scanner, "Observaciones (opcional):");
         String observacionesFinal = observaciones;
