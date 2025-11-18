@@ -444,10 +444,9 @@ public class MenuHandler {
         EnumTipo tipo = elegirTipoCodigo();
         String valor = validarEntradaString(scanner, "Valor", 20);
         LocalDate fechaAsignacion = LocalDate.now();
-        String observaciones = validarEntradaString(scanner, "Observaciones (opcional):");
-        String observacionesFinal = observaciones;
+        String observaciones = validarEntradaStringOpcional(scanner, "Observaciones");
 
-        return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observacionesFinal);
+        return new CodigoBarras(id, false, tipo, valor, fechaAsignacion, observaciones);
     }
 
     /**
@@ -813,5 +812,37 @@ public class MenuHandler {
      */
     static String validarEntradaString(Scanner scanner, String nombreVariable) {
         return validarEntradaString(scanner, nombreVariable, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Valida una cadena de texto opcional.
+     * Permite que el campo esté vacío. No valida longitud máxima.
+     *
+     * @param scanner Scanner para leer la entrada
+     * @param nombreVariable Nombre del campo a validar
+     * @param maxChar Parámetro ignorado (mantenido para compatibilidad con la firma)
+     * @return Cadena válida (puede ser null si se presiona Enter sin ingresar nada)
+     */
+    static String validarEntradaStringOpcional(Scanner scanner, String nombreVariable, int maxChar) {
+        System.out.print("Ingrese " + nombreVariable + " (opcional, Enter para omitir): ");
+        String variable = scanner.nextLine().trim();
+
+        // Si está vacío, retornar null (es opcional)
+        if (variable.isEmpty()) {
+            return null;
+        }
+        return variable;
+    }
+
+    /**
+     * Valida una cadena de texto opcional sin límite de longitud.
+     * Permite que el campo esté vacío.
+     *
+     * @param scanner Scanner para leer la entrada
+     * @param nombreVariable Nombre del campo a validar
+     * @return Cadena válida (puede ser null si se presiona Enter sin ingresar nada)
+     */
+    static String validarEntradaStringOpcional(Scanner scanner, String nombreVariable) {
+        return validarEntradaStringOpcional(scanner, nombreVariable, Integer.MAX_VALUE);
     }
 }
