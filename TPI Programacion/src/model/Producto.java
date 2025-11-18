@@ -9,6 +9,11 @@ package model;
  * Hernan E.Bula
  */
 
+/**
+ * Clase que representa un producto en el sistema.
+ * Extiende de Base para heredar funcionalidad de eliminación lógica e ID.
+ * Un producto puede tener asociado un código de barras.
+ */
 public class Producto extends Base {
     
     private String nombre;
@@ -19,6 +24,16 @@ public class Producto extends Base {
     private CategoriaProducto categoria;
     private CodigoBarras codigoBarras;
     
+    /**
+     * Constructor completo de Producto.
+     * 
+     * @param nombre Nombre del producto
+     * @param marca Marca del producto
+     * @param precio Precio del producto
+     * @param peso Peso del producto
+     * @param stock Cantidad en stock
+     * @param id ID único del producto
+     */
     public Producto(String nombre, String marca, double precio, double peso, int stock, long id) {
         super(id, false);
         this.nombre = nombre;
@@ -117,6 +132,12 @@ public class Producto extends Base {
         this.codigoBarras = codigoBarras;
     }
 
+    /**
+     * Devuelve una representación en cadena del producto.
+     * Incluye toda la información del producto y su código de barras si está asignado.
+     * 
+     * @return String con la información completa del producto
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -139,6 +160,11 @@ public class Producto extends Base {
         return sb.toString();
     }
     
+    /**
+     * Compara este producto con otro objeto para determinar igualdad.
+     * @param obj Objeto a comparar
+     * @return true si los objetos son iguales, false en caso contrario
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -181,6 +207,10 @@ public class Producto extends Base {
         return true;
     }
 
+    /**
+     * Calcula el código hash del producto.
+     * @return Código hash del objeto
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
